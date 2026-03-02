@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Application principale
+  agent-ia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agent-ia-facebook
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - FACEBOOK_APP_ID=${FACEBOOK_APP_ID}
+      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET}
+      - FACEBOOK_PAGE_ACCESS_TOKEN=${FACEBOOK_PAGE_ACCESS_TOKEN}
+      - FACEBOOK_VERIFY_TOKEN=${FACEBOOK_VERIFY_TOKEN}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LLM_PROVIDER=${LLM_PROVIDER:-anthropic}
+      - LLM_MODEL=${LLM_MODEL:-claude-3-5-sonnet-20241022}
+      - CHROMA_PERSIST_DIRECTORY=/app/data/chroma_db
+      - DEBUG=false
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis pour le cache (optionnel)
+  redis:
+    image: redis:7-alpine
+    container_name: agent-ia-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis_data:
+
+networks:
+  default:
+    name: agent-ia-network

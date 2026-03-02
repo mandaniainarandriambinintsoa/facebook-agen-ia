@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Quels sont vos horaires d'ouverture ?",
+        "answer": "Nous sommes ouverts du lundi au vendredi de 9h a 18h, et le samedi de 10h a 16h. Nous sommes fermes le dimanche."
+    },
+    {
+        "question": "Comment puis-je vous contacter ?",
+        "answer": "Vous pouvez nous contacter par email a support@example.com ou par telephone au 01 23 45 67 89."
+    },
+    {
+        "question": "Quelle est votre politique de retour ?",
+        "answer": "Nous acceptons les retours dans les 30 jours suivant l'achat, a condition que le produit soit dans son emballage d'origine et non utilise."
+    },
+    {
+        "question": "Proposez-vous la livraison gratuite ?",
+        "answer": "Oui, la livraison est gratuite pour toute commande superieure a 50 euros. En dessous, les frais de livraison sont de 4,99 euros."
+    },
+    {
+        "question": "Comment suivre ma commande ?",
+        "answer": "Vous recevez un email avec un numero de suivi des que votre commande est expediee. Vous pouvez suivre votre colis sur notre site ou sur le site du transporteur."
+    }
+]

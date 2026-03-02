@@ -1,0 +1,31 @@
+# FastAPI et serveur
+fastapi
+uvicorn[standard]
+python-multipart
+httpx
+
+# Embeddings et calculs vectoriels
+sentence-transformers
+numpy
+
+# LLM APIs
+anthropic
+openai
+groq
+
+# Chargement de documents
+pypdf2
+pdfplumber
+beautifulsoup4
+
+# Configuration et environnement
+python-dotenv
+pydantic
+pydantic-settings
+
+# Utilitaires
+aiofiles
+tenacity
+
+# Logging et monitoring
+loguru

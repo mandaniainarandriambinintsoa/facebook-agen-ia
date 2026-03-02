@@ -1,0 +1,21 @@
+Bienvenue sur notre boutique en ligne !
+
+Qui sommes-nous ?
+Nous sommes une entreprise specialisee dans la vente de produits de qualite depuis 2010.
+Notre mission est de vous offrir les meilleurs produits au meilleur prix.
+
+Nos services
+- Livraison rapide sous 48h
+- Service client disponible 6j/7
+- Garantie satisfait ou rembourse
+- Paiement securise
+
+Nos engagements
+Nous nous engageons a vous offrir une experience d'achat agreable et securisee.
+Tous nos produits sont selectionnes avec soin et testes avant d'etre mis en vente.
+
+Moyens de paiement acceptes
+- Carte bancaire (Visa, Mastercard)
+- PayPal
+- Virement bancaire
+- Paiement en 3 fois sans frais (pour les commandes > 100 euros)
