@@ -1,6 +1,6 @@
 """
 Generateur de reponses avec LLM
-OpenAI (principal) avec fallback vers Groq
+Groq (principal)
 """
 
 from loguru import logger
@@ -126,24 +126,18 @@ INSTRUCTIONS SUPPLEMENTAIRES:
 """
 
     def __init__(self):
-        """Initialise le generateur avec fallback chain: OpenAI → Groq"""
+        """Initialise le generateur avec Groq comme LLM principal"""
         self.primary_client = None
         self.fallback_client = None
 
         # Client principal
         provider = settings.llm_provider
-        if provider == "openai" and settings.openai_api_key:
-            self.primary_client = OpenAIClient()
+        if provider == "groq" and settings.groq_api_key:
+            self.primary_client = GroqClient()
         elif provider == "anthropic" and settings.anthropic_api_key:
             self.primary_client = AnthropicClient()
-        elif provider == "groq" and settings.groq_api_key:
-            self.primary_client = GroqClient()
-
-        # Client fallback (Groq si principal = OpenAI, OpenAI si principal = Groq)
-        if provider != "groq" and settings.groq_api_key:
-            self.fallback_client = GroqClient()
-        elif provider != "openai" and settings.openai_api_key:
-            self.fallback_client = OpenAIClient()
+        elif provider == "openai" and settings.openai_api_key:
+            self.primary_client = OpenAIClient()
 
         if self.primary_client:
             logger.info(f"LLM principal: {provider}")

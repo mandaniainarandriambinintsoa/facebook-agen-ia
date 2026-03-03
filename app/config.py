@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     anthropic_api_key: str = Field(default="", description="Anthropic API Key")
     openai_api_key: str = Field(default="", description="OpenAI API Key")
     groq_api_key: str = Field(default="", description="Groq API Key")
-    llm_provider: Literal["anthropic", "openai", "groq"] = Field(default="openai", description="LLM Provider principal")
-    llm_model: str = Field(default="gpt-4o-mini", description="LLM Model")
+    llm_provider: Literal["anthropic", "openai", "groq"] = Field(default="groq", description="LLM Provider principal")
+    llm_model: str = Field(default="llama-3.3-70b-versatile", description="LLM Model")
     groq_model: str = Field(default="llama-3.3-70b-versatile", description="Groq fallback model")
 
     # n8n Configuration
