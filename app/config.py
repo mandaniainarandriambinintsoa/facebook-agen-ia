@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     rate_limit_period: int = Field(default=60, description="Rate limit period in seconds")
 
     # Support Contact
-    support_email: str = Field(default="support@example.com", description="Support email")
+    support_email: str = Field(default="", description="Support email")
     support_phone: str = Field(default="", description="Support phone")
 
     class Config:

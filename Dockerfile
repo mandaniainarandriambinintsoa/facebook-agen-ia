@@ -23,9 +23,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copier le code de l'application
 COPY app/ ./app/
 COPY scripts/ ./scripts/
+COPY data/ ./data/
 
-# Creer les repertoires necessaires
-RUN mkdir -p /app/data/documents /app/data/chroma_db /app/logs
+# Creer les repertoires necessaires (si absents)
+RUN mkdir -p /app/data/chroma_db /app/logs
 
 # Pre-telecharger le modele fastembed au build (evite le download au runtime)
 RUN python -c "from fastembed import TextEmbedding; list(TextEmbedding(model_name='BAAI/bge-small-en-v1.5').embed(['warmup']))"
