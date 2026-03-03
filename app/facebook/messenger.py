@@ -181,6 +181,8 @@ class MessengerClient:
 
                 try:
                     response = await client.post(url, params=params, json=payload)
+                    if response.status_code != 200:
+                        logger.error(f"Facebook API erreur {response.status_code}: {response.text}")
                     response.raise_for_status()
                     logger.debug(f"Message envoye a {recipient_id}")
                 except httpx.HTTPError as e:
