@@ -35,8 +35,8 @@ class Settings(BaseSettings):
 
     # Embedding Configuration
     embedding_model: str = Field(
-        default="sentence-transformers/all-MiniLM-L6-v2",
-        description="Sentence transformer model for embeddings"
+        default="BAAI/bge-small-en-v1.5",
+        description="FastEmbed model for embeddings (ONNX, no PyTorch)"
     )
 
     # RAG Configuration

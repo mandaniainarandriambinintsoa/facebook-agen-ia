@@ -5,7 +5,7 @@ python-multipart
 httpx
 
 # Embeddings et calculs vectoriels
-sentence-transformers
+fastembed
 numpy
 
 # LLM APIs

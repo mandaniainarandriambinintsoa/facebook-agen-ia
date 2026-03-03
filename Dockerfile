@@ -27,6 +27,9 @@ COPY scripts/ ./scripts/
 # Creer les repertoires necessaires
 RUN mkdir -p /app/data/documents /app/data/chroma_db /app/logs
 
+# Pre-telecharger le modele fastembed au build (evite le download au runtime)
+RUN python -c "from fastembed import TextEmbedding; list(TextEmbedding(model_name='BAAI/bge-small-en-v1.5').embed(['warmup']))"
+
 # Exposer le port (Railway injecte $PORT)
 EXPOSE ${PORT:-8000}
 
