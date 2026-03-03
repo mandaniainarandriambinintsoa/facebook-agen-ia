@@ -3,7 +3,7 @@ Webhooks Facebook
 Gestion des evenements entrants (messages et commentaires)
 """
 
-from fastapi import APIRouter, Request, HTTPException, Query
+from fastapi import APIRouter, Request, HTTPException, Query, BackgroundTasks
 from fastapi.responses import PlainTextResponse
 from loguru import logger
 from typing import Any
@@ -43,12 +43,12 @@ async def verify_webhook(
 
 
 @router.post("")
-async def handle_webhook(request: Request):
+async def handle_webhook(request: Request, background_tasks: BackgroundTasks):
     """
     Reception des evenements Facebook (messages et commentaires)
+    Retourne 200 immediatement, traitement en arriere-plan
     """
     try:
-        # Verifier la signature (optionnel mais recommande)
         body = await request.body()
         signature = request.headers.get("X-Hub-Signature-256", "")
 
@@ -57,27 +57,22 @@ async def handle_webhook(request: Request):
                 logger.warning("Signature invalide sur le webhook")
                 raise HTTPException(status_code=403, detail="Invalid signature")
 
-        # Parser le payload
         payload = await request.json()
-        logger.debug(f"Webhook recu: {payload}")
-
-        # Traiter selon le type d'objet
         object_type = payload.get("object")
 
         if object_type == "page":
-            # Evenements de page (messages Messenger)
-            await process_page_events(payload)
+            # Traitement en arriere-plan — Facebook recoit 200 immediatement
+            background_tasks.add_task(process_page_events, payload)
         elif object_type == "instagram":
-            # Evenements Instagram (si configure)
             logger.info("Evenement Instagram recu (non traite)")
         else:
             logger.warning(f"Type d'objet inconnu: {object_type}")
 
+        # 200 retourne AVANT que le RAG soit execute
         return {"status": "ok"}
 
     except Exception as e:
         logger.error(f"Erreur traitement webhook: {e}")
-        # Toujours retourner 200 pour eviter les retry de Facebook
         return {"status": "error", "message": str(e)}
 
 
