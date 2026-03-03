@@ -1,0 +1,51 @@
+[
+    {
+        "categorie": "T-shirts",
+        "produits": [
+            {"nom": "T-shirt basique uni", "prix": "25 000 Ar", "tailles": "S, M, L, XL", "couleurs": "noir, blanc, gris, bleu marine", "stock": "disponible"},
+            {"nom": "T-shirt imprime streetwear", "prix": "35 000 Ar", "tailles": "M, L, XL", "couleurs": "noir, blanc", "stock": "disponible"},
+            {"nom": "Polo classique", "prix": "40 000 Ar", "tailles": "S, M, L, XL, XXL", "couleurs": "bleu, noir, blanc, rouge", "stock": "disponible"}
+        ]
+    },
+    {
+        "categorie": "Robes",
+        "produits": [
+            {"nom": "Robe d'ete fleurie", "prix": "45 000 Ar", "tailles": "S, M, L", "couleurs": "floral bleu, floral rose", "stock": "disponible"},
+            {"nom": "Robe longue elegante", "prix": "75 000 Ar", "tailles": "S, M, L, XL", "couleurs": "noir, bordeaux, vert emeraude", "stock": "disponible"},
+            {"nom": "Robe casual en jean", "prix": "55 000 Ar", "tailles": "S, M, L", "couleurs": "bleu clair, bleu fonce", "stock": "rupture de stock"}
+        ]
+    },
+    {
+        "categorie": "Pantalons",
+        "produits": [
+            {"nom": "Jean slim classique", "prix": "45 000 Ar", "tailles": "S, M, L, XL", "couleurs": "bleu, noir, gris", "stock": "disponible"},
+            {"nom": "Pantalon chino", "prix": "40 000 Ar", "tailles": "M, L, XL", "couleurs": "beige, noir, kaki", "stock": "disponible"},
+            {"nom": "Jogging sportif", "prix": "35 000 Ar", "tailles": "S, M, L, XL, XXL", "couleurs": "noir, gris", "stock": "disponible"}
+        ]
+    },
+    {
+        "categorie": "Vestes",
+        "produits": [
+            {"nom": "Veste en jean", "prix": "65 000 Ar", "tailles": "M, L, XL", "couleurs": "bleu clair, bleu fonce", "stock": "disponible"},
+            {"nom": "Blouson leger coupe-vent", "prix": "55 000 Ar", "tailles": "S, M, L, XL", "couleurs": "noir, kaki, bleu marine", "stock": "disponible"},
+            {"nom": "Sweat a capuche", "prix": "50 000 Ar", "tailles": "M, L, XL, XXL", "couleurs": "noir, gris, blanc", "stock": "disponible"}
+        ]
+    },
+    {
+        "categorie": "Chaussures",
+        "produits": [
+            {"nom": "Baskets blanches", "prix": "60 000 Ar", "tailles": "39, 40, 41, 42, 43, 44", "couleurs": "blanc, noir/blanc", "stock": "disponible"},
+            {"nom": "Sandales d'ete", "prix": "30 000 Ar", "tailles": "36, 37, 38, 39, 40, 41", "couleurs": "marron, noir", "stock": "disponible"},
+            {"nom": "Chaussures de ville", "prix": "75 000 Ar", "tailles": "40, 41, 42, 43, 44", "couleurs": "noir, marron", "stock": "disponible"}
+        ]
+    },
+    {
+        "categorie": "Accessoires",
+        "produits": [
+            {"nom": "Sac a main", "prix": "40 000 Ar", "tailles": "taille unique", "couleurs": "noir, marron, beige", "stock": "disponible"},
+            {"nom": "Casquette brodee", "prix": "15 000 Ar", "tailles": "taille unique", "couleurs": "noir, blanc, bleu", "stock": "disponible"},
+            {"nom": "Ceinture en cuir", "prix": "20 000 Ar", "tailles": "S/M, L/XL", "couleurs": "noir, marron", "stock": "disponible"},
+            {"nom": "Lunettes de soleil", "prix": "25 000 Ar", "tailles": "taille unique", "couleurs": "noir, dore", "stock": "disponible"}
+        ]
+    }
+]

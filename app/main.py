@@ -11,9 +11,13 @@ from pydantic import BaseModel
 from typing import Optional
 import sys
 
+from pathlib import Path
+
 from app.config import settings
 from app.facebook.webhooks import router as facebook_router
 from app.rag import RAGRetriever, ResponseGenerator, ConfidenceHandler
+from app.knowledge.loader import DocumentLoader
+from app.knowledge.processor import DocumentProcessor
 
 
 # --- Schemas pour l'API n8n ---
@@ -69,6 +73,11 @@ async def lifespan(app: FastAPI):
         response_generator = ResponseGenerator()
         confidence_handler = ConfidenceHandler()
         logger.info("Services RAG initialises avec succes")
+
+        # Auto-indexation si la base est vide
+        if len(rag_retriever.documents) == 0:
+            logger.info("Base de connaissances vide, auto-indexation des documents...")
+            _auto_index_documents(rag_retriever)
     except Exception as e:
         logger.error(f"Erreur lors de l'initialisation des services RAG: {e}")
         raise
@@ -118,6 +127,28 @@ async def health_check():
         "rag_initialized": rag_retriever is not None,
         "generator_initialized": response_generator is not None
     }
+
+
+def _auto_index_documents(retriever: RAGRetriever):
+    """Indexe automatiquement les documents au demarrage si la base est vide"""
+    documents_dir = Path("./data/documents")
+    if not documents_dir.exists():
+        logger.warning(f"Repertoire {documents_dir} introuvable, pas d'indexation")
+        return
+
+    loader = DocumentLoader(str(documents_dir))
+    documents = loader.load_directory()
+
+    if not documents:
+        logger.warning("Aucun document trouve a indexer")
+        return
+
+    processor = DocumentProcessor(chunk_size=500, chunk_overlap=50, min_chunk_size=50)
+    chunks = processor.process_documents(documents)
+    docs, metadatas, ids = processor.prepare_for_indexing(chunks)
+
+    retriever.add_documents(docs, metadatas, ids)
+    logger.info(f"Auto-indexation terminee: {len(docs)} chunks indexes")
 
 
 def get_rag_services():

@@ -1,22 +1,50 @@
 [
     {
-        "question": "Quels sont vos horaires d'ouverture ?",
-        "answer": "Nous sommes ouverts du lundi au vendredi de 9h a 18h, et le samedi de 10h a 16h. Nous sommes fermes le dimanche."
+        "question": "Quels sont vos prix ?",
+        "answer": "Nos prix varient selon les produits. T-shirts a partir de 25 000 Ar, robes a partir de 45 000 Ar, pantalons a partir de 35 000 Ar, chaussures a partir de 50 000 Ar. Envoyez-nous une photo ou le nom du produit qui vous interesse et nous vous donnerons le prix exact."
     },
     {
-        "question": "Comment puis-je vous contacter ?",
-        "answer": "Vous pouvez nous contacter par email a support@example.com ou par telephone au 01 23 45 67 89."
+        "question": "Est-ce que ce produit est disponible ?",
+        "answer": "Pour verifier la disponibilite d'un produit, envoyez-nous le nom ou la photo du produit et nous vous confirmerons s'il est en stock avec les tailles et couleurs disponibles."
     },
     {
-        "question": "Quelle est votre politique de retour ?",
-        "answer": "Nous acceptons les retours dans les 30 jours suivant l'achat, a condition que le produit soit dans son emballage d'origine et non utilise."
+        "question": "Proposez-vous la livraison ?",
+        "answer": "Oui, nous livrons dans tout Madagascar ! Antananarivo sous 24-48h (5 000 Ar), autres villes sous 3-7 jours (10 000 Ar). Livraison gratuite a partir de 200 000 Ar d'achat."
     },
     {
-        "question": "Proposez-vous la livraison gratuite ?",
-        "answer": "Oui, la livraison est gratuite pour toute commande superieure a 50 euros. En dessous, les frais de livraison sont de 4,99 euros."
+        "question": "Quels sont les modes de paiement ?",
+        "answer": "Nous acceptons MVola, Orange Money, Airtel Money, virement bancaire, et paiement a la livraison (Antananarivo uniquement)."
     },
     {
-        "question": "Comment suivre ma commande ?",
-        "answer": "Vous recevez un email avec un numero de suivi des que votre commande est expediee. Vous pouvez suivre votre colis sur notre site ou sur le site du transporteur."
+        "question": "Comment passer commande ?",
+        "answer": "C'est simple ! Envoyez-nous un message sur Messenger avec le produit que vous voulez, nous confirmons la disponibilite et le prix, vous payez, et nous expedions votre commande."
+    },
+    {
+        "question": "Quelles tailles avez-vous ?",
+        "answer": "Nous proposons les tailles S, M, L, XL et XXL selon les produits. Dites-nous quel produit vous interesse et nous vous donnerons les tailles disponibles."
+    },
+    {
+        "question": "Puis-je echanger un produit ?",
+        "answer": "Oui, les echanges sont possibles dans les 7 jours suivant la reception. Le produit doit etre dans son etat d'origine, non porte et avec les etiquettes."
+    },
+    {
+        "question": "Combien coute la livraison ?",
+        "answer": "Antananarivo : 5 000 Ar. Autres villes de Madagascar : 10 000 Ar. Livraison gratuite pour les commandes de 200 000 Ar ou plus."
+    },
+    {
+        "question": "Quel est le delai de livraison ?",
+        "answer": "Antananarivo : 24 a 48 heures. Autres villes (Toamasina, Mahajanga, Fianarantsoa, Antsirabe, etc.) : 3 a 7 jours ouvrables."
+    },
+    {
+        "question": "Quels sont vos horaires ?",
+        "answer": "Nous sommes disponibles du lundi au vendredi de 8h a 17h, et le samedi de 9h a 13h. Notre service Messenger est disponible 7j/7."
+    },
+    {
+        "question": "Vous etes ou ?",
+        "answer": "Manda-page est une boutique en ligne basee a Madagascar. Nous livrons dans tout le pays. Contactez-nous sur Messenger pour passer commande."
+    },
+    {
+        "question": "Avez-vous des promotions ?",
+        "answer": "Oui, nous proposons regulierement des promotions et des offres speciales ! Suivez notre page Facebook Manda-page pour ne rien rater. Livraison gratuite a partir de 200 000 Ar."
     }
 ]

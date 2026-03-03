@@ -115,8 +115,10 @@ class DocumentLoader:
 
     def load_json_faq(self, file_path: Path) -> List[Document]:
         """
-        Charge un fichier JSON de FAQ
-        Format attendu: [{"question": "...", "answer": "..."}]
+        Charge un fichier JSON (FAQ ou catalogue produits)
+        Formats supportes:
+        - FAQ: [{"question": "...", "answer": "..."}]
+        - Catalogue: [{"categorie": "...", "produits": [...]}]
         """
         documents = []
         try:
@@ -128,6 +130,7 @@ class DocumentLoader:
             if isinstance(data, list):
                 for i, item in enumerate(data):
                     if isinstance(item, dict):
+                        # Format FAQ
                         question = item.get("question", item.get("q", ""))
                         answer = item.get("answer", item.get("a", item.get("response", "")))
 
@@ -144,7 +147,38 @@ class DocumentLoader:
                                 doc_type="faq"
                             ))
 
-            logger.info(f"FAQ JSON chargee: {file_path.name} - {len(documents)} Q&A")
+                        # Format catalogue produits
+                        elif "categorie" in item and "produits" in item:
+                            categorie = item["categorie"]
+                            for produit in item["produits"]:
+                                nom = produit.get("nom", "")
+                                prix = produit.get("prix", "")
+                                tailles = produit.get("tailles", "")
+                                couleurs = produit.get("couleurs", "")
+                                stock = produit.get("stock", "")
+
+                                content = (
+                                    f"Produit: {nom}\n"
+                                    f"Categorie: {categorie}\n"
+                                    f"Prix: {prix}\n"
+                                    f"Tailles disponibles: {tailles}\n"
+                                    f"Couleurs: {couleurs}\n"
+                                    f"Disponibilite: {stock}"
+                                )
+                                documents.append(Document(
+                                    content=content,
+                                    metadata={
+                                        "categorie": categorie,
+                                        "produit": nom,
+                                        "prix": prix,
+                                        "stock": stock,
+                                        "filename": file_path.name
+                                    },
+                                    source=str(file_path),
+                                    doc_type="catalogue"
+                                ))
+
+            logger.info(f"JSON charge: {file_path.name} - {len(documents)} elements")
 
         except Exception as e:
             logger.error(f"Erreur chargement JSON {file_path}: {e}")
