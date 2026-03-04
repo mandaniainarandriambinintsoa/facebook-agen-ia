@@ -1,11 +1,10 @@
 """
 Module RAG (Retrieval Augmented Generation)
-Gestion des embeddings, recherche semantique et generation de reponses
+Recherche semantique multi-tenant et generation de reponses
 """
 
-from .retriever import RAGRetriever
 from .generator import ResponseGenerator
 from .confidence import ConfidenceHandler
-from .embeddings import EmbeddingService
+from .pg_retriever import PgVectorRetriever
 
-__all__ = ["RAGRetriever", "ResponseGenerator", "ConfidenceHandler", "EmbeddingService"]
+__all__ = ["ResponseGenerator", "ConfidenceHandler", "PgVectorRetriever"]

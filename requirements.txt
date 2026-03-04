@@ -1,6 +1,6 @@
 # FastAPI et serveur
 fastapi
-uvicorn[standard]
+uvicorn
 python-multipart
 httpx
 
@@ -9,19 +9,25 @@ fastembed
 numpy
 
 # LLM APIs
-anthropic
-openai
 groq
-
-# Chargement de documents
-pypdf2
-pdfplumber
-beautifulsoup4
 
 # Configuration et environnement
 python-dotenv
 pydantic
 pydantic-settings
+
+# Base de donnees (PostgreSQL + pgvector)
+sqlalchemy[asyncio]
+asyncpg
+alembic
+pgvector
+
+# Catalogue Excel/CSV
+openpyxl
+
+# Authentification
+python-jose[cryptography]
+passlib[bcrypt]
 
 # Utilitaires
 aiofiles

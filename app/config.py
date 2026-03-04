@@ -29,9 +29,15 @@ class Settings(BaseSettings):
     # n8n Configuration
     n8n_base_url: str = Field(default="", description="n8n instance URL")
 
-    # ChromaDB Configuration
-    chroma_persist_directory: str = Field(default="./data/chroma_db", description="ChromaDB storage path")
-    chroma_collection_name: str = Field(default="knowledge_base", description="ChromaDB collection name")
+    # Database Configuration (Neon PostgreSQL + pgvector)
+    database_url: str = Field(default="", description="PostgreSQL URL (sync, for Alembic)")
+    database_url_async: str = Field(default="", description="PostgreSQL URL (async, asyncpg)")
+
+    # Multi-tenant / SaaS Configuration
+    jwt_secret: str = Field(default="change-me-in-production", description="JWT signing secret")
+    jwt_algorithm: str = Field(default="HS256", description="JWT algorithm")
+    jwt_expiration_hours: int = Field(default=72, description="JWT token expiration in hours")
+    facebook_oauth_redirect_uri: str = Field(default="", description="OAuth callback URL")
 
     # Embedding Configuration
     embedding_model: str = Field(

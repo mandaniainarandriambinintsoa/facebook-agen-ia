@@ -1,12 +1,12 @@
 """
-Webhooks Facebook
+Webhooks Facebook — Multi-Tenant
 Gestion des evenements entrants (messages et commentaires)
+Lookup tenant par page_id
 """
 
 from fastapi import APIRouter, Request, HTTPException, Query, BackgroundTasks
 from fastapi.responses import PlainTextResponse
 from loguru import logger
-from typing import Any
 import hmac
 import hashlib
 
@@ -14,12 +14,7 @@ from app.config import settings
 from app.facebook.messenger import MessengerClient
 from app.facebook.comments import CommentsHandler
 
-
 router = APIRouter()
-
-# Clients Facebook
-messenger_client = MessengerClient()
-comments_handler = CommentsHandler()
 
 
 @router.get("")
@@ -28,10 +23,7 @@ async def verify_webhook(
     hub_verify_token: str = Query(None, alias="hub.verify_token"),
     hub_challenge: str = Query(None, alias="hub.challenge")
 ):
-    """
-    Verification du webhook par Facebook
-    Facebook envoie une requete GET pour verifier que le webhook est valide
-    """
+    """Verification du webhook par Facebook"""
     logger.info(f"Verification webhook: mode={hub_mode}, token={hub_verify_token}")
 
     if hub_mode == "subscribe" and hub_verify_token == settings.facebook_verify_token:
@@ -61,14 +53,12 @@ async def handle_webhook(request: Request, background_tasks: BackgroundTasks):
         object_type = payload.get("object")
 
         if object_type == "page":
-            # Traitement en arriere-plan — Facebook recoit 200 immediatement
             background_tasks.add_task(process_page_events, payload)
         elif object_type == "instagram":
             logger.info("Evenement Instagram recu (non traite)")
         else:
             logger.warning(f"Type d'objet inconnu: {object_type}")
 
-        # 200 retourne AVANT que le RAG soit execute
         return {"status": "ok"}
 
     except Exception as e:
@@ -77,16 +67,7 @@ async def handle_webhook(request: Request, background_tasks: BackgroundTasks):
 
 
 def verify_signature(payload: bytes, signature: str) -> bool:
-    """
-    Verifie la signature HMAC du webhook
-
-    Args:
-        payload: Corps de la requete
-        signature: Signature X-Hub-Signature-256
-
-    Returns:
-        True si la signature est valide
-    """
+    """Verifie la signature HMAC du webhook"""
     if not settings.facebook_app_secret:
         return True
 
@@ -97,104 +78,113 @@ def verify_signature(payload: bytes, signature: str) -> bool:
     ).hexdigest()
 
     actual_signature = signature.replace("sha256=", "")
-
     return hmac.compare_digest(expected_signature, actual_signature)
 
 
 async def process_page_events(payload: dict):
     """
-    Traite les evenements de page Facebook
-
-    Args:
-        payload: Payload du webhook
+    Traite les evenements de page Facebook.
+    Multi-tenant: lookup le tenant par page_id.
     """
+    from app.db.database import AsyncSessionLocal
+    from app.db import crud
+
     entries = payload.get("entry", [])
 
     for entry in entries:
         page_id = entry.get("id")
         logger.debug(f"Traitement evenements pour la page: {page_id}")
 
-        # Messages Messenger
+        # ── Lookup tenant en BDD ──
+        tenant = None
+        tenant_config = None
+        db = None
+
+        if AsyncSessionLocal is not None:
+            try:
+                db = AsyncSessionLocal()
+                tenant = await crud.get_tenant_by_page_id(db, page_id)
+                if tenant:
+                    tenant_config = await crud.get_tenant_config(db, tenant.id)
+                    logger.debug(f"Tenant trouve: {tenant.page_name} ({tenant.id})")
+            except Exception as e:
+                logger.error(f"Erreur lookup tenant: {e}")
+
+        # ── Messages Messenger ──
         messaging_events = entry.get("messaging", [])
         for event in messaging_events:
-            await process_messaging_event(event)
+            if tenant:
+                await process_messaging_event_mt(event, tenant, tenant_config, db)
+            else:
+                logger.warning(f"Pas de tenant pour page_id={page_id}, message ignore")
 
-        # Changements de page (commentaires)
+        # ── Commentaires ──
         changes = entry.get("changes", [])
         for change in changes:
-            await process_page_change(change)
+            if tenant:
+                await process_page_change_mt(change, tenant, tenant_config, db)
+            else:
+                logger.warning(f"Pas de tenant pour page_id={page_id}, changement ignore")
+
+        # Fermer la session DB
+        if db:
+            await db.close()
 
 
-async def process_messaging_event(event: dict):
-    """
-    Traite un evenement de messagerie Messenger
-
-    Args:
-        event: Evenement de messagerie
-    """
+async def process_messaging_event_mt(event: dict, tenant, tenant_config, db):
+    """Traite un message Messenger en mode multi-tenant"""
     sender_id = event.get("sender", {}).get("id")
-    recipient_id = event.get("recipient", {}).get("id")
 
-    # Message recu
     if "message" in event:
-        message = event["message"]
-        message_text = message.get("text", "")
-
+        message_text = event["message"].get("text", "")
         if message_text:
-            logger.info(f"Message recu de {sender_id}: {message_text[:50]}...")
-            await messenger_client.handle_message(sender_id, message_text)
+            logger.info(f"[MT] Message de {sender_id} pour {tenant.page_name}: {message_text[:50]}...")
+            mt_client = MessengerClient(access_token=tenant.page_access_token)
+            await mt_client.handle_message_mt(
+                sender_id=sender_id,
+                message_text=message_text,
+                tenant=tenant,
+                tenant_config=tenant_config,
+                db=db,
+            )
 
-    # Postback (boutons)
     elif "postback" in event:
-        postback = event["postback"]
-        payload = postback.get("payload", "")
-        logger.info(f"Postback recu de {sender_id}: {payload}")
-        await messenger_client.handle_postback(sender_id, payload)
+        payload = event["postback"].get("payload", "")
+        logger.info(f"[MT] Postback de {sender_id}: {payload}")
+        mt_client = MessengerClient(access_token=tenant.page_access_token)
+        if payload == "GET_STARTED":
+            from app.facebook.onboarding import OnboardingFlow
+            onboarding = OnboardingFlow(mt_client, tenant, tenant_config, db)
+            await onboarding.start()
+        else:
+            await mt_client.handle_message_mt(
+                sender_id=sender_id,
+                message_text=payload,
+                tenant=tenant,
+                tenant_config=tenant_config,
+                db=db,
+            )
 
-    # Reaction
-    elif "reaction" in event:
-        reaction = event["reaction"]
-        logger.debug(f"Reaction recue de {sender_id}: {reaction}")
 
-    # Read receipt
-    elif "read" in event:
-        logger.debug(f"Message lu par {sender_id}")
-
-
-async def process_page_change(change: dict):
-    """
-    Traite un changement sur la page (commentaires, etc.)
-
-    Args:
-        change: Evenement de changement
-    """
+async def process_page_change_mt(change: dict, tenant, tenant_config, db):
+    """Traite un commentaire en mode multi-tenant"""
     field = change.get("field")
     value = change.get("value", {})
 
-    if field == "feed":
-        # Nouveau commentaire ou post
-        item = value.get("item")
+    if field == "feed" and value.get("item") == "comment":
+        comment_id = value.get("comment_id")
+        post_id = value.get("post_id")
+        message = value.get("message", "")
+        from_user = value.get("from", {})
 
-        if item == "comment":
-            comment_id = value.get("comment_id")
-            post_id = value.get("post_id")
-            message = value.get("message", "")
-            from_user = value.get("from", {})
-
-            logger.info(f"Nouveau commentaire sur post {post_id}: {message[:50]}...")
-
-            # Eviter de repondre a ses propres commentaires
-            if from_user.get("id") != value.get("page_id"):
-                await comments_handler.handle_comment(
-                    comment_id=comment_id,
-                    post_id=post_id,
-                    message=message,
-                    from_user=from_user
-                )
-
-    elif field == "mention":
-        # Mention de la page
-        logger.info(f"Page mentionnee: {value}")
-
-    else:
-        logger.debug(f"Changement non traite: {field}")
+        if from_user.get("id") != tenant.page_id:
+            mt_handler = CommentsHandler(access_token=tenant.page_access_token)
+            await mt_handler.handle_comment_mt(
+                comment_id=comment_id,
+                post_id=post_id,
+                message=message,
+                from_user=from_user,
+                tenant=tenant,
+                tenant_config=tenant_config,
+                db=db,
+            )

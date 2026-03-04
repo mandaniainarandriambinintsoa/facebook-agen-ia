@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 from abc import ABC, abstractmethod
 
 from app.config import settings
-from app.rag.retriever import RetrievedDocument
+from app.rag.models import RetrievedDocument
 
 
 class BaseLLMClient(ABC):
@@ -125,10 +125,14 @@ INSTRUCTIONS SUPPLEMENTAIRES:
 - Si tu proposes de contacter le support, utilise: {support_contact}
 """
 
-    def __init__(self):
-        """Initialise le generateur avec Groq comme LLM principal"""
+    def __init__(self, custom_system_prompt: str = None):
+        """
+        Initialise le generateur avec Groq comme LLM principal.
+        custom_system_prompt: si fourni, remplace le template par defaut (multi-tenant).
+        """
         self.primary_client = None
         self.fallback_client = None
+        self.custom_system_prompt = custom_system_prompt
 
         # Client principal
         provider = settings.llm_provider
@@ -207,10 +211,13 @@ INSTRUCTIONS SUPPLEMENTAIRES:
         context = self._format_context(documents)
         support_contact = self._get_support_contact()
 
-        system_prompt = self.SYSTEM_PROMPT_TEMPLATE.format(
-            context=context,
-            support_contact=support_contact
-        )
+        if self.custom_system_prompt:
+            system_prompt = self.custom_system_prompt + f"\n\nCONTEXTE:\n{context}"
+        else:
+            system_prompt = self.SYSTEM_PROMPT_TEMPLATE.format(
+                context=context,
+                support_contact=support_contact
+            )
 
         # Adapter le prompt selon le niveau de confiance
         if confidence_level == "low":
