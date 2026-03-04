@@ -27,8 +27,11 @@ def init_db():
         logger.warning("DATABASE_URL_ASYNC non configuree — mode BDD desactive")
         return
 
+    # asyncpg n'accepte pas ?sslmode=require, il faut le convertir en ?ssl=require
+    db_url = settings.database_url_async.replace("sslmode=", "ssl=")
+
     engine = create_async_engine(
-        settings.database_url_async,
+        db_url,
         echo=settings.debug,
         pool_size=5,
         max_overflow=10,
