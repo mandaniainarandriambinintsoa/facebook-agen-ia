@@ -32,6 +32,27 @@ async def lifespan(app: FastAPI):
     init_db()
     logger.info("Module base de donnees initialise")
 
+    # Configurer le menu persistant pour tous les tenants actifs
+    try:
+        from app.db.database import AsyncSessionLocal
+        if AsyncSessionLocal is not None:
+            from sqlalchemy import select
+            from app.db.models import Tenant
+            from app.facebook.messenger import MessengerClient
+
+            async with AsyncSessionLocal() as db:
+                result = await db.execute(
+                    select(Tenant).where(Tenant.is_active == True)
+                )
+                tenants = result.scalars().all()
+                for tenant in tenants:
+                    if tenant.page_access_token:
+                        client = MessengerClient(access_token=tenant.page_access_token)
+                        await client.setup_persistent_menu()
+                        logger.info(f"Menu persistant configure pour {tenant.page_name}")
+    except Exception as e:
+        logger.warning(f"Erreur setup menu persistant au demarrage: {e}")
+
     yield
 
     # Nettoyage

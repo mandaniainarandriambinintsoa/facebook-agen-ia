@@ -231,6 +231,41 @@ async def delete_tenant_products(db: AsyncSession, tenant_id: uuid.UUID):
     await db.commit()
 
 
+async def search_products(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    query: str = None,
+    category: str = None,
+    limit: int = 10,
+) -> list[Product]:
+    """Recherche des produits par nom/description ou categorie"""
+    stmt = select(Product).where(Product.tenant_id == tenant_id)
+
+    if category:
+        stmt = stmt.where(func.lower(Product.category) == category.lower())
+
+    if query:
+        search_filter = (
+            func.lower(Product.name).contains(query.lower())
+            | func.lower(Product.description).contains(query.lower())
+        )
+        stmt = stmt.where(search_filter)
+
+    stmt = stmt.limit(limit)
+    result = await db.execute(stmt)
+    return list(result.scalars().all())
+
+
+async def get_product_categories(db: AsyncSession, tenant_id: uuid.UUID) -> list[str]:
+    """Liste les categories distinctes d'un tenant"""
+    result = await db.execute(
+        select(Product.category)
+        .where(Product.tenant_id == tenant_id, Product.category != "", Product.category.isnot(None))
+        .distinct()
+    )
+    return [row[0] for row in result.fetchall()]
+
+
 async def count_products(db: AsyncSession, tenant_id: uuid.UUID) -> int:
     """Compte les produits d'un tenant"""
     result = await db.execute(

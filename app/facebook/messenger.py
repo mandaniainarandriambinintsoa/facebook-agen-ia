@@ -54,7 +54,10 @@ class MessengerClient:
                 message_text, tenant, tenant_config, db
             )
 
-            await self.send_message(sender_id, response)
+            # Envoyer la reponse avec quick replies contextuels
+            from app.facebook.commands import get_contextual_quick_replies
+            quick_replies = get_contextual_quick_replies(confidence_level)
+            await self.send_quick_replies(sender_id, response, quick_replies)
 
             # Log the message
             from app.db import crud
@@ -184,6 +187,144 @@ class MessengerClient:
                 response.raise_for_status()
             except httpx.HTTPError as e:
                 logger.error(f"Erreur envoi message avec boutons: {e}")
+
+    async def send_quick_replies(
+        self,
+        recipient_id: str,
+        text: str,
+        quick_replies: list[dict],
+    ):
+        """Envoie un message avec des quick replies (max 13, titre max 20 chars)"""
+        if not self.access_token:
+            return
+
+        url = f"{self.GRAPH_API_URL}/me/messages"
+        params = {"access_token": self.access_token}
+
+        formatted_qr = []
+        for qr in quick_replies[:13]:
+            formatted_qr.append({
+                "content_type": "text",
+                "title": qr["title"][:20],
+                "payload": qr["payload"],
+            })
+
+        # Quick replies ne supportent que 640 chars de texte
+        # Si le texte est trop long, envoyer le texte d'abord puis les QR separement
+        messages = self._split_long_message(text, max_length=2000)
+
+        async with httpx.AsyncClient() as client:
+            # Envoyer tous les messages sauf le dernier en texte brut
+            for msg in messages[:-1]:
+                payload = {
+                    "recipient": {"id": recipient_id},
+                    "message": {"text": msg},
+                    "messaging_type": "RESPONSE",
+                }
+                try:
+                    response = await client.post(url, params=params, json=payload)
+                    response.raise_for_status()
+                except httpx.HTTPError as e:
+                    logger.error(f"Erreur envoi message: {e}")
+
+            # Dernier message avec quick replies
+            payload = {
+                "recipient": {"id": recipient_id},
+                "message": {
+                    "text": messages[-1],
+                    "quick_replies": formatted_qr,
+                },
+                "messaging_type": "RESPONSE",
+            }
+            try:
+                response = await client.post(url, params=params, json=payload)
+                if response.status_code != 200:
+                    logger.error(f"Facebook API erreur {response.status_code}: {response.text}")
+                response.raise_for_status()
+            except httpx.HTTPError as e:
+                logger.error(f"Erreur envoi quick replies: {e}")
+
+    async def send_generic_template(
+        self,
+        recipient_id: str,
+        elements: list[dict],
+    ):
+        """Envoie un carousel de cartes (generic template, max 10 elements, max 3 boutons)"""
+        if not self.access_token:
+            return
+
+        url = f"{self.GRAPH_API_URL}/me/messages"
+        params = {"access_token": self.access_token}
+
+        # Limiter a 10 elements, 3 boutons par element
+        formatted_elements = []
+        for el in elements[:10]:
+            element = {
+                "title": el["title"][:80],
+            }
+            if el.get("subtitle"):
+                element["subtitle"] = el["subtitle"][:80]
+            if el.get("image_url"):
+                element["image_url"] = el["image_url"]
+            if el.get("buttons"):
+                element["buttons"] = el["buttons"][:3]
+            formatted_elements.append(element)
+
+        payload = {
+            "recipient": {"id": recipient_id},
+            "message": {
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "generic",
+                        "elements": formatted_elements,
+                    },
+                }
+            },
+            "messaging_type": "RESPONSE",
+        }
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(url, params=params, json=payload)
+                if response.status_code != 200:
+                    logger.error(f"Facebook API erreur {response.status_code}: {response.text}")
+                response.raise_for_status()
+            except httpx.HTTPError as e:
+                logger.error(f"Erreur envoi generic template: {e}")
+
+    async def setup_persistent_menu(self):
+        """Configure le menu persistant et le bouton Get Started"""
+        if not self.access_token:
+            return
+
+        url = f"{self.GRAPH_API_URL}/me/messenger_profile"
+        params = {"access_token": self.access_token}
+
+        payload = {
+            "persistent_menu": [
+                {
+                    "locale": "default",
+                    "composer_input_disabled": False,
+                    "call_to_actions": [
+                        {"type": "postback", "title": "Menu principal", "payload": "CMD_MENU"},
+                        {"type": "postback", "title": "Nos produits", "payload": "CMD_PRODUCTS"},
+                        {"type": "postback", "title": "Parler a un agent", "payload": "CMD_AGENT"},
+                    ],
+                }
+            ],
+            "get_started": {"payload": "GET_STARTED"},
+        }
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(url, params=params, json=payload)
+                if response.status_code == 200:
+                    logger.info("Menu persistant configure avec succes")
+                else:
+                    logger.error(f"Erreur config menu persistant: {response.status_code} {response.text}")
+            except httpx.HTTPError as e:
+                logger.error(f"Erreur setup menu persistant: {e}")
 
     async def send_typing_indicator(self, recipient_id: str, is_typing: bool):
         """Envoie l'indicateur de frappe"""

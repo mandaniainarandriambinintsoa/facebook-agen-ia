@@ -133,37 +133,66 @@ async def process_page_events(payload: dict):
 
 async def process_messaging_event_mt(event: dict, tenant, tenant_config, db):
     """Traite un message Messenger en mode multi-tenant"""
+    from app.facebook.commands import CommandRouter
+
     sender_id = event.get("sender", {}).get("id")
+    mt_client = MessengerClient(access_token=tenant.page_access_token)
+    command_router = CommandRouter(mt_client, tenant, tenant_config, db)
 
-    if "message" in event:
-        message_text = event["message"].get("text", "")
-        if message_text:
-            logger.info(f"[MT] Message de {sender_id} pour {tenant.page_name}: {message_text[:50]}...")
-            mt_client = MessengerClient(access_token=tenant.page_access_token)
-            await mt_client.handle_message_mt(
-                sender_id=sender_id,
-                message_text=message_text,
-                tenant=tenant,
-                tenant_config=tenant_config,
-                db=db,
-            )
-
-    elif "postback" in event:
+    # ── Postbacks (boutons, menu persistant, Get Started) ──
+    if "postback" in event:
         payload = event["postback"].get("payload", "")
         logger.info(f"[MT] Postback de {sender_id}: {payload}")
-        mt_client = MessengerClient(access_token=tenant.page_access_token)
-        if payload == "GET_STARTED":
+
+        # Si onboarding pas termine et GET_STARTED → onboarding
+        if payload == "GET_STARTED" and tenant_config and tenant_config.onboarding_step != "complete":
             from app.facebook.onboarding import OnboardingFlow
             onboarding = OnboardingFlow(mt_client, tenant, tenant_config, db)
             await onboarding.start()
-        else:
-            await mt_client.handle_message_mt(
-                sender_id=sender_id,
-                message_text=payload,
-                tenant=tenant,
-                tenant_config=tenant_config,
-                db=db,
-            )
+            return
+
+        # Sinon → command router
+        if await command_router.handle(sender_id, payload):
+            return
+
+        # Fallback: traiter comme message texte
+        await mt_client.handle_message_mt(
+            sender_id=sender_id,
+            message_text=payload,
+            tenant=tenant,
+            tenant_config=tenant_config,
+            db=db,
+        )
+        return
+
+    # ── Messages texte ──
+    if "message" in event:
+        message = event["message"]
+        message_text = message.get("text", "")
+
+        if not message_text:
+            return
+
+        logger.info(f"[MT] Message de {sender_id} pour {tenant.page_name}: {message_text[:50]}...")
+
+        # Quick reply payload (prioritaire)
+        quick_reply_payload = message.get("quick_reply", {}).get("payload")
+        if quick_reply_payload:
+            if await command_router.handle(sender_id, quick_reply_payload):
+                return
+
+        # Commande texte (/menu, /produits, etc.)
+        if await command_router.handle(sender_id, message_text):
+            return
+
+        # Sinon → pipeline RAG normal
+        await mt_client.handle_message_mt(
+            sender_id=sender_id,
+            message_text=message_text,
+            tenant=tenant,
+            tenant_config=tenant_config,
+            db=db,
+        )
 
 
 async def process_page_change_mt(change: dict, tenant, tenant_config, db):
