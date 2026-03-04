@@ -90,7 +90,7 @@ class OnboardingFlow:
         )
 
         # Generer le lien du dashboard
-        dashboard_url = "https://votre-dashboard.vercel.app"  # TODO: configurer
+        dashboard_url = "https://facebook-dashboard-nine.vercel.app"
 
         await self.client.send_message(
             sender_id,
