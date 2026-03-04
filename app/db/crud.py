@@ -110,10 +110,10 @@ async def search_embeddings(
 ) -> list[tuple]:
     """Recherche vectorielle filtree par tenant (pgvector cosine)"""
     stmt = text("""
-        SELECT id, content, metadata, 1 - (embedding <=> :query_vec::vector) AS score
+        SELECT id, content, metadata, 1 - (embedding <=> CAST(:query_vec AS vector)) AS score
         FROM embeddings
-        WHERE tenant_id = :tenant_id
-        ORDER BY embedding <=> :query_vec::vector
+        WHERE tenant_id = CAST(:tenant_id AS uuid)
+        ORDER BY embedding <=> CAST(:query_vec AS vector)
         LIMIT :top_k
     """)
     result = await db.execute(stmt, {
