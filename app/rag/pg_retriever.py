@@ -44,6 +44,12 @@ class PgVectorRetriever:
         if top_k is None:
             top_k = settings.rag_top_k
 
+        # Verifier s'il y a des embeddings avant de charger le modele
+        count = await crud.count_embeddings(self.db, self.tenant_id)
+        if count == 0:
+            logger.debug(f"Aucun embedding pour tenant {self.tenant_id}, skip retrieval")
+            return [], 0.0
+
         # Embed la requete
         query_vector = self.embedding_service.embed_text(query)
 
