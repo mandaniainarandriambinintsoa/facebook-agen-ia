@@ -187,10 +187,8 @@ class CommandRouter:
                     ],
                 }
 
-                # Ajouter image si disponible dans metadata
-                image_url = (product.metadata_ or {}).get("image_url")
-                if image_url:
-                    element["image_url"] = image_url
+                if product.image_url:
+                    element["image_url"] = product.image_url
 
                 elements.append(element)
 
