@@ -56,7 +56,7 @@ async def facebook_callback(
             existing = await crud.get_tenant_by_page_id(db, page["page_id"])
             if existing:
                 # Mettre a jour le token
-                await crud.update_tenant_token(existing, page["page_access_token"])
+                await crud.update_tenant_token(db, existing, page["page_access_token"])
                 created_tenants.append(existing)
             else:
                 # Creer un nouveau tenant
