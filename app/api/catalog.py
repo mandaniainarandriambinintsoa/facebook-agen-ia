@@ -41,6 +41,7 @@ COLUMN_MAPPING = {
     "sizes": ["taille", "tailles", "size", "sizes", "pointure"],
     "colors": ["couleur", "couleurs", "color", "colors"],
     "stock_status": ["stock", "disponibilite", "dispo", "status", "statut", "availability"],
+    "image_url": ["image", "image_url", "photo", "photo_url", "img", "url_image", "lien_image"],
 }
 
 
@@ -159,6 +160,7 @@ async def list_products(
             "sizes": p.sizes,
             "colors": p.colors,
             "stock_status": p.stock_status,
+            "image_url": p.image_url,
         }
         for p in products
     ]

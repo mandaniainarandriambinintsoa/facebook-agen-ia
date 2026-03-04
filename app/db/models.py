@@ -69,6 +69,7 @@ class Product(Base):
     sizes = Column(String(255), default="")
     colors = Column(String(255), default="")
     stock_status = Column(String(50), default="disponible")
+    image_url = Column(Text, nullable=True)
     metadata_ = Column("metadata", JSONB, default=dict)
 
     # Relations

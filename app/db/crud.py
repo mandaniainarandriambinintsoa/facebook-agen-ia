@@ -183,6 +183,7 @@ async def create_products(
             sizes=data.get("sizes", ""),
             colors=data.get("colors", ""),
             stock_status=data.get("stock_status", "disponible"),
+            image_url=data.get("image_url", None),
             metadata_=data.get("metadata", {}),
         )
         db.add(product)
