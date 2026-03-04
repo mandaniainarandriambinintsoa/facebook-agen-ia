@@ -16,7 +16,7 @@ async def get_facebook_auth_url(state: str = "") -> str:
     params = {
         "client_id": settings.facebook_app_id,
         "redirect_uri": settings.facebook_oauth_redirect_uri,
-        "scope": "pages_show_list,pages_messaging,pages_read_engagement,pages_manage_metadata",
+        "scope": "pages_show_list,pages_messaging,pages_manage_metadata",
         "response_type": "code",
         "state": state,
     }
