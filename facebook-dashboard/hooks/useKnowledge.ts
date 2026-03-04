@@ -13,5 +13,10 @@ export function useKnowledge() {
     mutate();
   };
 
-  return { knowledge: data, error, isLoading, reindex, mutate };
+  const clearKnowledge = async () => {
+    await tenantApi("/knowledge", { method: "DELETE" });
+    mutate();
+  };
+
+  return { knowledge: data, error, isLoading, reindex, clearKnowledge, mutate };
 }

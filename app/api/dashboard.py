@@ -193,3 +193,17 @@ async def get_knowledge_stats(
             for u in uploads
         ],
     }
+
+
+@router.delete("/{tenant_id}/knowledge")
+async def delete_knowledge(
+    tenant_id: str,
+    tenant: Tenant = Depends(get_current_tenant),
+    db: AsyncSession = Depends(get_db),
+):
+    """Supprime tous les embeddings du tenant"""
+    if str(tenant.id) != tenant_id:
+        raise HTTPException(status_code=403, detail="Acces refuse")
+
+    await crud.delete_tenant_embeddings(db, tenant.id)
+    return {"status": "deleted"}
