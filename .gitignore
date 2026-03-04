@@ -90,6 +90,12 @@ token.json
 
 # Claude settings
 .claude/
+.mcp.json
+
+# Next.js dashboard
+facebook-dashboard/node_modules/
+facebook-dashboard/.next/
+facebook-dashboard/.env.local
 
 # Local project files
 nul
