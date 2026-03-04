@@ -11,9 +11,9 @@ export function useMessages(limit = 50, offset = 0) {
 }
 
 export function useMessagesChart(days = 30) {
-  const { data, error, isLoading } = useSWR<ChartPoint[]>(
+  const { data, error, isLoading } = useSWR<{ days: number; data: ChartPoint[] }>(
     `/messages/chart?days=${days}`,
     tenantFetcher
   );
-  return { chartData: data, error, isLoading };
+  return { chartData: data?.data, error, isLoading };
 }

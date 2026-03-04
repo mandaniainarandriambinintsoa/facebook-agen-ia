@@ -46,12 +46,12 @@ export function RecentMessages() {
                     {new Date(msg.created_at).toLocaleDateString("fr-FR")}
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate text-sm">
-                    {msg.message}
+                    {msg.message_text}
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate text-sm">
-                    {msg.response}
+                    {msg.response_text}
                   </TableCell>
-                  <TableCell>{confidenceBadge(msg.confidence)}</TableCell>
+                  <TableCell>{confidenceBadge(msg.confidence_score)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

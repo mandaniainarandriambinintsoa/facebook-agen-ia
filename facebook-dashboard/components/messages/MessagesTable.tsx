@@ -66,16 +66,16 @@ export function MessagesTable() {
                     {new Date(msg.created_at).toLocaleString("fr-FR")}
                   </TableCell>
                   <TableCell className="text-sm">
-                    {msg.sender_name || msg.sender_id}
+                    {msg.sender_id}
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate text-sm">
-                    {msg.message}
+                    {msg.message_text}
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate text-sm">
-                    {msg.response}
+                    {msg.response_text}
                   </TableCell>
                   <TableCell className="text-sm">{msg.channel}</TableCell>
-                  <TableCell>{confidenceBadge(msg.confidence)}</TableCell>
+                  <TableCell>{confidenceBadge(msg.confidence_score)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -118,19 +118,19 @@ export function MessagesTable() {
                 <p className="text-sm font-medium text-muted-foreground">
                   Expéditeur
                 </p>
-                <p>{selected.sender_name || selected.sender_id}</p>
+                <p>{selected.sender_id}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
                   Message
                 </p>
-                <p className="whitespace-pre-wrap">{selected.message}</p>
+                <p className="whitespace-pre-wrap">{selected.message_text}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
                   Réponse du bot
                 </p>
-                <p className="whitespace-pre-wrap">{selected.response}</p>
+                <p className="whitespace-pre-wrap">{selected.response_text}</p>
               </div>
               <div className="flex gap-4">
                 <div>
@@ -143,7 +143,7 @@ export function MessagesTable() {
                   <p className="text-sm font-medium text-muted-foreground">
                     Confiance
                   </p>
-                  {confidenceBadge(selected.confidence)}
+                  {confidenceBadge(selected.confidence_score)}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
