@@ -142,6 +142,7 @@ export function ProductsTable() {
                   className="h-4 w-4 rounded border-gray-300"
                 />
               </TableHead>
+              <TableHead>Image</TableHead>
               <TableHead>Nom</TableHead>
               <TableHead>Categorie</TableHead>
               <TableHead>Prix</TableHead>
@@ -162,6 +163,17 @@ export function ProductsTable() {
                     onChange={() => toggleOne(product.id)}
                     className="h-4 w-4 rounded border-gray-300"
                   />
+                </TableCell>
+                <TableCell>
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="h-10 w-10 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">?</div>
+                  )}
                 </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>{product.category}</TableCell>
