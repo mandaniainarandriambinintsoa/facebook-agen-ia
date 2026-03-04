@@ -8,7 +8,7 @@ export function useProducts() {
     tenantFetcher
   );
 
-  const updateProduct = async (id: number, product: Partial<Product>) => {
+  const updateProduct = async (id: string, product: Partial<Product>) => {
     await tenantApi(`/products/${id}`, {
       method: "PUT",
       body: JSON.stringify(product),
@@ -16,8 +16,13 @@ export function useProducts() {
     mutate();
   };
 
-  const deleteProduct = async (id: number) => {
+  const deleteProduct = async (id: string) => {
     await tenantApi(`/products/${id}`, { method: "DELETE" });
+    mutate();
+  };
+
+  const deleteProducts = async (ids: string[]) => {
+    await Promise.all(ids.map((id) => tenantApi(`/products/${id}`, { method: "DELETE" })));
     mutate();
   };
 
@@ -31,5 +36,5 @@ export function useProducts() {
     mutate();
   };
 
-  return { products: data, error, isLoading, mutate, updateProduct, deleteProduct, uploadCatalog };
+  return { products: data, error, isLoading, mutate, updateProduct, deleteProduct, deleteProducts, uploadCatalog };
 }

@@ -29,11 +29,13 @@ import { toast } from "sonner";
 import type { Product } from "@/lib/types";
 
 export function ProductsTable() {
-  const { products, isLoading, updateProduct, deleteProduct, uploadCatalog } =
+  const { products, isLoading, updateProduct, deleteProduct, deleteProducts, uploadCatalog } =
     useProducts();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState<Product | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const filtered = useMemo(() => {
     if (!products) return [];
@@ -46,23 +48,56 @@ export function ProductsTable() {
     );
   }, [products, search]);
 
+  const allSelected = filtered.length > 0 && filtered.every((p) => selected.has(p.id));
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filtered.map((p) => p.id)));
+    }
+  };
+
+  const toggleOne = (id: string) => {
+    const next = new Set(selected);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    setSelected(next);
+  };
+
   const handleDelete = async () => {
     if (!deleting) return;
     try {
       await deleteProduct(deleting.id);
-      toast.success("Produit supprimé");
+      selected.delete(deleting.id);
+      setSelected(new Set(selected));
+      toast.success("Produit supprime");
     } catch {
       toast.error("Erreur lors de la suppression");
     }
     setDeleting(null);
   };
 
-  const handleSave = async (id: number, data: Partial<Product>) => {
+  const handleBulkDelete = async () => {
+    try {
+      await deleteProducts(Array.from(selected));
+      setSelected(new Set());
+      toast.success(`${selected.size} produit(s) supprime(s)`);
+    } catch {
+      toast.error("Erreur lors de la suppression");
+    }
+    setBulkDeleting(false);
+  };
+
+  const handleSave = async (id: string, data: Partial<Product>) => {
     try {
       await updateProduct(id, data);
-      toast.success("Produit mis à jour");
+      toast.success("Produit mis a jour");
     } catch {
-      toast.error("Erreur lors de la mise à jour");
+      toast.error("Erreur lors de la mise a jour");
     }
   };
 
@@ -72,13 +107,25 @@ export function ProductsTable() {
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher par nom ou catégorie..."
+            placeholder="Rechercher par nom ou categorie..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
           />
         </div>
-        <UploadCatalogButton onUpload={uploadCatalog} />
+        <div className="flex gap-2">
+          {selected.size > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setBulkDeleting(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Supprimer ({selected.size})
+            </Button>
+          )}
+          <UploadCatalogButton onUpload={uploadCatalog} />
+        </div>
       </div>
 
       {isLoading ? (
@@ -87,8 +134,16 @@ export function ProductsTable() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[40px]">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={toggleAll}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+              </TableHead>
               <TableHead>Nom</TableHead>
-              <TableHead>Catégorie</TableHead>
+              <TableHead>Categorie</TableHead>
               <TableHead>Prix</TableHead>
               <TableHead>Description</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
@@ -96,14 +151,21 @@ export function ProductsTable() {
           </TableHeader>
           <TableBody>
             {filtered.map((product) => (
-              <TableRow key={product.id}>
+              <TableRow
+                key={product.id}
+                className={selected.has(product.id) ? "bg-muted/50" : ""}
+              >
+                <TableCell>
+                  <input
+                    type="checkbox"
+                    checked={selected.has(product.id)}
+                    onChange={() => toggleOne(product.id)}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>{product.category}</TableCell>
-                <TableCell>
-                  {product.price != null
-                    ? `${product.price.toLocaleString()} Ar`
-                    : "-"}
-                </TableCell>
+                <TableCell>{product.price || "-"}</TableCell>
                 <TableCell className="max-w-[250px] truncate">
                   {product.description}
                 </TableCell>
@@ -138,19 +200,39 @@ export function ProductsTable() {
         onSave={handleSave}
       />
 
+      {/* Single delete */}
       <AlertDialog open={!!deleting} onOpenChange={() => setDeleting(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer le produit</AlertDialogTitle>
             <AlertDialogDescription>
               Voulez-vous vraiment supprimer &quot;{deleting?.name}&quot; ? Cette
-              action est irréversible.
+              action est irreversible.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>
               Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk delete */}
+      <AlertDialog open={bulkDeleting} onOpenChange={() => setBulkDeleting(false)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer {selected.size} produit(s)</AlertDialogTitle>
+            <AlertDialogDescription>
+              Voulez-vous vraiment supprimer les {selected.size} produit(s) selectionne(s) ?
+              Cette action est irreversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkDelete}>
+              Supprimer tout
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

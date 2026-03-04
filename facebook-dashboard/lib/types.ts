@@ -36,13 +36,15 @@ export interface PaginatedMessages {
 }
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  price: number | null;
+  price: string;
   category: string;
-  image_url: string | null;
-  created_at: string;
+  sizes?: string;
+  colors?: string;
+  stock_status?: string;
+  image_url?: string | null;
 }
 
 export interface KnowledgeStats {

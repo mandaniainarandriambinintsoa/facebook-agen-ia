@@ -19,30 +19,24 @@ import type { Product } from "@/lib/types";
 interface FormValues {
   name: string;
   description: string;
-  price: number | null;
+  price: string;
   category: string;
-  image_url: string | null;
+  image_url: string;
 }
 
 const schema = z.object({
   name: z.string().min(1, "Nom requis"),
   description: z.string(),
-  price: z.preprocess(
-    (v) => (v === "" || v === null || v === undefined ? null : Number(v)),
-    z.number().nullable()
-  ),
+  price: z.string(),
   category: z.string(),
-  image_url: z.preprocess(
-    (v) => (v === "" ? null : v),
-    z.string().nullable()
-  ),
+  image_url: z.string(),
 });
 
 interface Props {
   product: Product | null;
   open: boolean;
   onClose: () => void;
-  onSave: (id: number, data: Partial<Product>) => Promise<void>;
+  onSave: (id: string, data: Partial<Product>) => Promise<void>;
 }
 
 export function ProductEditDialog({ product, open, onClose, onSave }: Props) {
@@ -52,9 +46,9 @@ export function ProductEditDialog({ product, open, onClose, onSave }: Props) {
       ? {
           name: product.name,
           description: product.description,
-          price: product.price,
-          category: product.category,
-          image_url: product.image_url,
+          price: product.price || "",
+          category: product.category || "",
+          image_url: product.image_url || "",
         }
       : undefined,
   });
@@ -86,7 +80,7 @@ export function ProductEditDialog({ product, open, onClose, onSave }: Props) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Prix</Label>
-              <Input type="number" step="0.01" {...register("price")} />
+              <Input {...register("price")} placeholder="ex: 15000 Ar" />
             </div>
             <div>
               <Label>Catégorie</Label>
