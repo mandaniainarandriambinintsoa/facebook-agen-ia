@@ -72,7 +72,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "*",
+        "https://facebook-dashboard-nine.vercel.app",
+        "https://facebook-dashboard-mandas-projects-d5939030.vercel.app",
+        "http://localhost:3000",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -126,51 +128,6 @@ async def api_config():
         "support_phone": settings.support_phone,
         "multi_tenant": bool(settings.database_url_async),
     }
-
-
-@app.get("/api/debug/test-rag")
-async def test_rag(q: str = "t-shirt"):
-    """Endpoint de debug pour tester le pipeline RAG"""
-    from app.db.database import AsyncSessionLocal
-    from app.db import crud
-    from app.rag.pg_retriever import PgVectorRetriever
-    from app.rag.generator import ResponseGenerator
-    from app.rag.confidence import ConfidenceHandler
-
-    errors = []
-    try:
-        db = AsyncSessionLocal()
-        # Trouver le premier tenant
-        from sqlalchemy import select
-        from app.db.models import Tenant
-        result = await db.execute(select(Tenant).limit(1))
-        tenant = result.scalar_one_or_none()
-        if not tenant:
-            return {"error": "No tenant found"}
-
-        # Test retriever
-        try:
-            retriever = PgVectorRetriever(tenant_id=tenant.id, db=db)
-            docs, score = await retriever.retrieve(q)
-            errors.append(f"retriever OK: {len(docs)} docs, score={score:.3f}")
-        except Exception as e:
-            errors.append(f"retriever FAIL: {e}")
-            await db.close()
-            return {"errors": errors}
-
-        # Test generator
-        try:
-            generator = ResponseGenerator()
-            confidence = ConfidenceHandler()
-            rag_response = await confidence.process_query_async(q, retriever, generator)
-            errors.append(f"generator OK: {rag_response.response[:100]}")
-        except Exception as e:
-            errors.append(f"generator FAIL: {e}")
-
-        await db.close()
-        return {"steps": errors}
-    except Exception as e:
-        return {"error": str(e), "steps": errors}
 
 
 if __name__ == "__main__":
