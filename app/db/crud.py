@@ -10,7 +10,7 @@ from sqlalchemy import select, func, text, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 
-from app.db.models import Tenant, TenantConfig, Product, Embedding, MessageLog, Upload
+from app.db.models import Tenant, TenantConfig, TenantPlatform, Product, Embedding, MessageLog, Upload
 
 
 # ─── Tenants ───────────────────────────────────────────────
@@ -72,6 +72,62 @@ async def update_tenant_token(db: AsyncSession, tenant: Tenant, new_token: str):
     """Met a jour le token d'un tenant"""
     tenant.page_access_token = new_token
     tenant.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+
+
+# ─── Tenant Platforms ─────────────────────────────────────
+
+async def get_tenant_platform(
+    db: AsyncSession, platform: str, platform_id: str
+) -> Optional[TenantPlatform]:
+    """Trouve une connexion plateforme par type + identifiant"""
+    result = await db.execute(
+        select(TenantPlatform).where(
+            TenantPlatform.platform == platform,
+            TenantPlatform.platform_id == platform_id,
+            TenantPlatform.is_active == True,
+        )
+    )
+    return result.scalar_one_or_none()
+
+
+async def create_tenant_platform(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    platform: str,
+    platform_id: str,
+    access_token: str,
+    platform_name: str = "",
+    extra_data: dict = None,
+) -> TenantPlatform:
+    """Ajoute une connexion plateforme a un tenant"""
+    tp = TenantPlatform(
+        tenant_id=tenant_id,
+        platform=platform,
+        platform_id=platform_id,
+        access_token=access_token,
+        platform_name=platform_name,
+        extra_data=extra_data or {},
+    )
+    db.add(tp)
+    await db.commit()
+    await db.refresh(tp)
+    logger.info(f"Tenant {tenant_id}: plateforme {platform} connectee (id={platform_id})")
+    return tp
+
+
+async def get_tenant_platforms(db: AsyncSession, tenant_id: uuid.UUID) -> list[TenantPlatform]:
+    """Liste les plateformes connectees d'un tenant"""
+    result = await db.execute(
+        select(TenantPlatform).where(TenantPlatform.tenant_id == tenant_id)
+    )
+    return list(result.scalars().all())
+
+
+async def update_platform_token(db: AsyncSession, tp: TenantPlatform, new_token: str):
+    """Met a jour le token d'une plateforme"""
+    tp.access_token = new_token
+    tp.updated_at = datetime.now(timezone.utc)
     await db.commit()
 
 
@@ -354,6 +410,18 @@ async def get_messages_per_day(
     """)
     result = await db.execute(stmt, {"tenant_id": str(tenant_id), "since": since})
     return result.fetchall()
+
+
+async def count_messages_by_channel(db: AsyncSession, tenant_id: uuid.UUID) -> dict:
+    """Compte les messages par channel (messenger, instagram, whatsapp, comment)"""
+    stmt = text("""
+        SELECT channel, COUNT(*) as count
+        FROM message_logs
+        WHERE tenant_id = :tenant_id
+        GROUP BY channel
+    """)
+    result = await db.execute(stmt, {"tenant_id": str(tenant_id)})
+    return {row.channel: row.count for row in result.fetchall()}
 
 
 async def get_avg_confidence(db: AsyncSession, tenant_id: uuid.UUID) -> float:

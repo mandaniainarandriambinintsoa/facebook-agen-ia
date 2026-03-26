@@ -1,10 +1,10 @@
 """
-Module d'integration Facebook
-Gestion des webhooks, messages Messenger et commentaires
+Module d'integration Facebook — Shim de retrocompatibilite
+Le code reel est dans app.platforms.messenger.*
 """
 
-from .webhooks import router as webhooks_router
-from .messenger import MessengerClient
-from .comments import CommentsHandler
+from app.platforms.messenger.webhooks import router as webhooks_router
+from app.platforms.messenger.client import MessengerClient
+from app.platforms.messenger.comments import CommentsHandler
 
 __all__ = ["webhooks_router", "MessengerClient", "CommentsHandler"]

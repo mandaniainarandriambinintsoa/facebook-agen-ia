@@ -10,7 +10,7 @@ from loguru import logger
 import sys
 
 from app.config import settings
-from app.facebook.webhooks import router as facebook_router
+from app.platforms.messenger.webhooks import router as webhook_router
 
 
 # Configuration du logging
@@ -32,24 +32,26 @@ async def lifespan(app: FastAPI):
     init_db()
     logger.info("Module base de donnees initialise")
 
-    # Configurer le menu persistant pour tous les tenants actifs
+    # Configurer le menu persistant pour les tenants Messenger actifs
     try:
         from app.db.database import AsyncSessionLocal
         if AsyncSessionLocal is not None:
             from sqlalchemy import select
-            from app.db.models import Tenant
-            from app.facebook.messenger import MessengerClient
+            from app.db.models import TenantPlatform
+            from app.platforms.messenger.client import MessengerClient
 
             async with AsyncSessionLocal() as db:
                 result = await db.execute(
-                    select(Tenant).where(Tenant.is_active == True)
+                    select(TenantPlatform).where(
+                        TenantPlatform.platform == "messenger",
+                        TenantPlatform.is_active == True,
+                    )
                 )
-                tenants = result.scalars().all()
-                for tenant in tenants:
-                    if tenant.page_access_token:
-                        client = MessengerClient(access_token=tenant.page_access_token)
-                        await client.setup_persistent_menu()
-                        logger.info(f"Menu persistant configure pour {tenant.page_name}")
+                platforms = result.scalars().all()
+                for tp in platforms:
+                    client = MessengerClient(access_token=tp.access_token)
+                    await client.setup_persistent_menu()
+                    logger.info(f"Menu persistant configure pour {tp.platform_name}")
     except Exception as e:
         logger.warning(f"Erreur setup menu persistant au demarrage: {e}")
 
@@ -62,9 +64,9 @@ async def lifespan(app: FastAPI):
 
 # Creation de l'application FastAPI
 app = FastAPI(
-    title="Agent IA Facebook — SaaS Multi-Tenant",
-    description="Plateforme SaaS pour chatbots IA Facebook avec RAG",
-    version="2.0.0",
+    title="Agent IA Meta — SaaS Multi-Plateforme",
+    description="Plateforme SaaS pour chatbots IA (Messenger, Instagram, WhatsApp) avec RAG",
+    version="3.0.0",
     lifespan=lifespan
 )
 
@@ -83,8 +85,8 @@ app.add_middleware(
 
 # ─── Routes ────────────────────────────────────────────────
 
-# Facebook webhooks
-app.include_router(facebook_router, prefix="/webhook", tags=["Facebook"])
+# Webhooks Meta (Facebook, Instagram, WhatsApp)
+app.include_router(webhook_router, prefix="/webhook", tags=["Webhooks"])
 
 # API routes (OAuth, tenants, catalog, analytics)
 from app.api.tenants import router as auth_router, tenants_router
@@ -104,8 +106,8 @@ app.include_router(dashboard_router)
 async def root():
     return {
         "status": "healthy",
-        "service": "Agent IA Facebook — SaaS",
-        "version": "2.0.0",
+        "service": "Agent IA Meta — SaaS Multi-Plateforme",
+        "version": "3.0.0",
     }
 
 

@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import (
-    Column, String, Text, Boolean, Float, Integer, ForeignKey, DateTime, Index
+    Column, String, Text, Boolean, Float, Integer, ForeignKey, DateTime, Index, UniqueConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
@@ -32,10 +32,35 @@ class Tenant(Base):
 
     # Relations
     config = relationship("TenantConfig", back_populates="tenant", uselist=False, cascade="all, delete-orphan")
+    platforms = relationship("TenantPlatform", back_populates="tenant", cascade="all, delete-orphan")
     products = relationship("Product", back_populates="tenant", cascade="all, delete-orphan")
     embeddings = relationship("Embedding", back_populates="tenant", cascade="all, delete-orphan")
     message_logs = relationship("MessageLog", back_populates="tenant", cascade="all, delete-orphan")
     uploads = relationship("Upload", back_populates="tenant", cascade="all, delete-orphan")
+
+
+class TenantPlatform(Base):
+    """Connexion d'un tenant a une plateforme Meta (Messenger, Instagram, WhatsApp)"""
+    __tablename__ = "tenant_platforms"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+    platform = Column(String(20), nullable=False)  # "messenger", "instagram", "whatsapp"
+    platform_id = Column(String(100), nullable=False)  # page_id, ig_account_id, phone_number_id
+    access_token = Column(Text, nullable=False)
+    platform_name = Column(String(255), default="")
+    extra_data = Column(JSONB, default=dict)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    # Relations
+    tenant = relationship("Tenant", back_populates="platforms")
+
+    __table_args__ = (
+        UniqueConstraint("platform", "platform_id", name="uq_platform_platform_id"),
+        Index("idx_platform_lookup", "platform", "platform_id"),
+    )
 
 
 class TenantConfig(Base):

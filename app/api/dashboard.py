@@ -45,6 +45,9 @@ async def get_stats(
     products_count = await crud.count_products(db, tid)
     embeddings_count = await crud.count_embeddings(db, tid)
 
+    # Stats par channel
+    channels = await crud.count_messages_by_channel(db, tid)
+
     return {
         "messages_today": messages_today,
         "total_messages": total_messages,
@@ -53,6 +56,7 @@ async def get_stats(
         "embeddings_count": embeddings_count,
         "page_name": tenant.page_name,
         "is_active": tenant.is_active,
+        "channels": channels,
     }
 
 
