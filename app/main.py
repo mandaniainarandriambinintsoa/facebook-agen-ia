@@ -99,6 +99,12 @@ app.include_router(catalog_router)
 from app.api.dashboard import router as dashboard_router
 app.include_router(dashboard_router)
 
+from app.api.prospects import router as prospects_router
+app.include_router(prospects_router)
+
+from app.api.orders import router as orders_router
+app.include_router(orders_router)
+
 
 # ─── Health endpoints ─────────────────────────────────────
 

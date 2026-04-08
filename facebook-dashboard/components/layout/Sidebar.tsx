@@ -9,10 +9,14 @@ import {
   Package,
   Brain,
   Settings,
+  Flame,
+  ShoppingCart,
 } from "lucide-react";
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/prospects", label: "Prospects", icon: Flame },
+  { href: "/dashboard/orders", label: "Commandes", icon: ShoppingCart },
   { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
   { href: "/dashboard/products", label: "Produits", icon: Package },
   { href: "/dashboard/knowledge", label: "Connaissances", icon: Brain },

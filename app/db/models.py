@@ -37,6 +37,8 @@ class Tenant(Base):
     embeddings = relationship("Embedding", back_populates="tenant", cascade="all, delete-orphan")
     message_logs = relationship("MessageLog", back_populates="tenant", cascade="all, delete-orphan")
     uploads = relationship("Upload", back_populates="tenant", cascade="all, delete-orphan")
+    prospects = relationship("Prospect", back_populates="tenant", cascade="all, delete-orphan")
+    orders = relationship("Order", back_populates="tenant", cascade="all, delete-orphan")
 
 
 class TenantPlatform(Base):
@@ -135,6 +137,58 @@ class MessageLog(Base):
 
     # Relations
     tenant = relationship("Tenant", back_populates="message_logs")
+
+
+class Prospect(Base):
+    """Prospects detectes automatiquement (clients prets a acheter)"""
+    __tablename__ = "prospects"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+    sender_id = Column(String(100), nullable=False)
+    sender_name = Column(String(255), default="")
+    channel = Column(String(20), default="messenger")
+    trigger_keyword = Column(String(100), nullable=False)  # ex: "mvola", "livraison", "commande"
+    trigger_message = Column(Text, nullable=False)  # le message original
+    product_interest = Column(String(500), default="")  # produit mentionne si detecte
+    status = Column(String(20), default="new")  # new, contacted, converted, lost
+    notes = Column(Text, default="")
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    # Relations
+    tenant = relationship("Tenant", back_populates="prospects")
+
+    __table_args__ = (
+        Index("idx_prospects_tenant_status", "tenant_id", "status"),
+    )
+
+
+class Order(Base):
+    """Commandes automatiques prises par l'IA"""
+    __tablename__ = "orders"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
+    sender_id = Column(String(100), nullable=False)
+    customer_name = Column(String(255), default="")
+    customer_phone = Column(String(50), default="")
+    customer_address = Column(Text, default="")
+    channel = Column(String(20), default="messenger")
+    items = Column(JSONB, default=list)  # [{product_name, quantity, price}]
+    total_amount = Column(String(100), default="")
+    payment_method = Column(String(50), default="")  # mvola, orange_money, airtel_money, cash
+    status = Column(String(20), default="pending")  # pending, confirmed, delivered, cancelled
+    notes = Column(Text, default="")
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    # Relations
+    tenant = relationship("Tenant", back_populates="orders")
+
+    __table_args__ = (
+        Index("idx_orders_tenant_status", "tenant_id", "status"),
+    )
 
 
 class Upload(Base):

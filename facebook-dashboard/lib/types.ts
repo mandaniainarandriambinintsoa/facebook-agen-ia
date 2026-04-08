@@ -10,6 +10,13 @@ export interface Stats {
   messages_total: number;
   avg_confidence: number;
   products_count: number;
+  prospects_today: number;
+  prospects_total: number;
+  prospects_new: number;
+  orders_today: number;
+  orders_total: number;
+  orders_pending: number;
+  conversion_rate: number;
 }
 
 export interface ChartPoint {

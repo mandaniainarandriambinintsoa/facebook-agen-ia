@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app.db.database import Base
-from app.db.models import Tenant, TenantConfig, Product, Embedding, MessageLog, Upload
+from app.db.models import Tenant, TenantConfig, TenantPlatform, Product, Embedding, MessageLog, Upload, Prospect, Order
 
 config = context.config
 

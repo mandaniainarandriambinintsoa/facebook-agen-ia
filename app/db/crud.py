@@ -10,7 +10,7 @@ from sqlalchemy import select, func, text, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 
-from app.db.models import Tenant, TenantConfig, TenantPlatform, Product, Embedding, MessageLog, Upload
+from app.db.models import Tenant, TenantConfig, TenantPlatform, Product, Embedding, MessageLog, Upload, Prospect, Order
 
 
 # ─── Tenants ───────────────────────────────────────────────
@@ -464,3 +464,217 @@ async def get_uploads(db: AsyncSession, tenant_id: uuid.UUID) -> list[Upload]:
         .order_by(Upload.created_at.desc())
     )
     return list(result.scalars().all())
+
+
+# ─── Prospects ──────────────────────────────────────────────
+
+async def create_prospect(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    sender_id: str,
+    channel: str,
+    trigger_keyword: str,
+    trigger_message: str,
+    product_interest: str = "",
+    sender_name: str = "",
+) -> Prospect:
+    """Cree un nouveau prospect (hot lead)"""
+    prospect = Prospect(
+        tenant_id=tenant_id,
+        sender_id=sender_id,
+        sender_name=sender_name,
+        channel=channel,
+        trigger_keyword=trigger_keyword,
+        trigger_message=trigger_message,
+        product_interest=product_interest,
+    )
+    db.add(prospect)
+    await db.commit()
+    await db.refresh(prospect)
+    logger.info(f"Prospect cree pour tenant {tenant_id}: {trigger_keyword} via {channel}")
+    return prospect
+
+
+async def get_prospects(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    status: str = None,
+    limit: int = 50,
+    offset: int = 0,
+) -> list[Prospect]:
+    """Liste les prospects d'un tenant"""
+    stmt = select(Prospect).where(Prospect.tenant_id == tenant_id)
+    if status:
+        stmt = stmt.where(Prospect.status == status)
+    stmt = stmt.order_by(Prospect.created_at.desc()).offset(offset).limit(limit)
+    result = await db.execute(stmt)
+    return list(result.scalars().all())
+
+
+async def count_prospects(db: AsyncSession, tenant_id: uuid.UUID, status: str = None) -> int:
+    """Compte les prospects d'un tenant"""
+    stmt = select(func.count(Prospect.id)).where(Prospect.tenant_id == tenant_id)
+    if status:
+        stmt = stmt.where(Prospect.status == status)
+    result = await db.execute(stmt)
+    return result.scalar() or 0
+
+
+async def count_prospects_today(db: AsyncSession, tenant_id: uuid.UUID) -> int:
+    """Compte les prospects du jour"""
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    result = await db.execute(
+        select(func.count(Prospect.id)).where(
+            Prospect.tenant_id == tenant_id,
+            Prospect.created_at >= today_start,
+        )
+    )
+    return result.scalar() or 0
+
+
+async def count_prospects_this_week(db: AsyncSession, tenant_id: uuid.UUID) -> int:
+    """Compte les prospects de la semaine"""
+    week_start = datetime.now(timezone.utc) - timedelta(days=7)
+    result = await db.execute(
+        select(func.count(Prospect.id)).where(
+            Prospect.tenant_id == tenant_id,
+            Prospect.created_at >= week_start,
+        )
+    )
+    return result.scalar() or 0
+
+
+async def update_prospect_status(db: AsyncSession, prospect_id: uuid.UUID, status: str, notes: str = None) -> Optional[Prospect]:
+    """Met a jour le statut d'un prospect"""
+    result = await db.execute(select(Prospect).where(Prospect.id == prospect_id))
+    prospect = result.scalar_one_or_none()
+    if prospect:
+        prospect.status = status
+        if notes is not None:
+            prospect.notes = notes
+        prospect.updated_at = datetime.now(timezone.utc)
+        await db.commit()
+        await db.refresh(prospect)
+    return prospect
+
+
+async def get_prospects_per_day(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    days: int = 30,
+) -> list[tuple]:
+    """Prospects par jour sur les N derniers jours"""
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    stmt = text("""
+        SELECT DATE(created_at) as day, COUNT(*) as count
+        FROM prospects
+        WHERE tenant_id = :tenant_id AND created_at >= :since
+        GROUP BY DATE(created_at)
+        ORDER BY day
+    """)
+    result = await db.execute(stmt, {"tenant_id": str(tenant_id), "since": since})
+    return result.fetchall()
+
+
+# ─── Orders ──────────────────────────────────────────────
+
+async def create_order(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    sender_id: str,
+    channel: str,
+    customer_name: str = "",
+    customer_phone: str = "",
+    customer_address: str = "",
+    items: list = None,
+    total_amount: str = "",
+    payment_method: str = "",
+    notes: str = "",
+) -> Order:
+    """Cree une nouvelle commande"""
+    order = Order(
+        tenant_id=tenant_id,
+        sender_id=sender_id,
+        channel=channel,
+        customer_name=customer_name,
+        customer_phone=customer_phone,
+        customer_address=customer_address,
+        items=items or [],
+        total_amount=total_amount,
+        payment_method=payment_method,
+        notes=notes,
+    )
+    db.add(order)
+    await db.commit()
+    await db.refresh(order)
+    logger.info(f"Commande creee pour tenant {tenant_id}: {customer_name} via {channel}")
+    return order
+
+
+async def get_orders(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    status: str = None,
+    limit: int = 50,
+    offset: int = 0,
+) -> list[Order]:
+    """Liste les commandes d'un tenant"""
+    stmt = select(Order).where(Order.tenant_id == tenant_id)
+    if status:
+        stmt = stmt.where(Order.status == status)
+    stmt = stmt.order_by(Order.created_at.desc()).offset(offset).limit(limit)
+    result = await db.execute(stmt)
+    return list(result.scalars().all())
+
+
+async def count_orders(db: AsyncSession, tenant_id: uuid.UUID, status: str = None) -> int:
+    """Compte les commandes d'un tenant"""
+    stmt = select(func.count(Order.id)).where(Order.tenant_id == tenant_id)
+    if status:
+        stmt = stmt.where(Order.status == status)
+    result = await db.execute(stmt)
+    return result.scalar() or 0
+
+
+async def count_orders_today(db: AsyncSession, tenant_id: uuid.UUID) -> int:
+    """Compte les commandes du jour"""
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    result = await db.execute(
+        select(func.count(Order.id)).where(
+            Order.tenant_id == tenant_id,
+            Order.created_at >= today_start,
+        )
+    )
+    return result.scalar() or 0
+
+
+async def update_order_status(db: AsyncSession, order_id: uuid.UUID, status: str, notes: str = None) -> Optional[Order]:
+    """Met a jour le statut d'une commande"""
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    order = result.scalar_one_or_none()
+    if order:
+        order.status = status
+        if notes is not None:
+            order.notes = notes
+        order.updated_at = datetime.now(timezone.utc)
+        await db.commit()
+        await db.refresh(order)
+    return order
+
+
+async def get_orders_per_day(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    days: int = 30,
+) -> list[tuple]:
+    """Commandes par jour sur les N derniers jours"""
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    stmt = text("""
+        SELECT DATE(created_at) as day, COUNT(*) as count
+        FROM orders
+        WHERE tenant_id = :tenant_id AND created_at >= :since
+        GROUP BY DATE(created_at)
+        ORDER BY day
+    """)
+    result = await db.execute(stmt, {"tenant_id": str(tenant_id), "since": since})
+    return result.fetchall()

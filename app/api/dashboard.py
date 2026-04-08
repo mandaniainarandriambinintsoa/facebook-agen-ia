@@ -48,6 +48,17 @@ async def get_stats(
     # Stats par channel
     channels = await crud.count_messages_by_channel(db, tid)
 
+    # Stats prospects et commandes
+    prospects_today = await crud.count_prospects_today(db, tid)
+    prospects_total = await crud.count_prospects(db, tid)
+    prospects_new = await crud.count_prospects(db, tid, status="new")
+    orders_today = await crud.count_orders_today(db, tid)
+    orders_total = await crud.count_orders(db, tid)
+    orders_pending = await crud.count_orders(db, tid, status="pending")
+
+    # Taux de conversion
+    conversion_rate = (orders_total / prospects_total * 100) if prospects_total > 0 else 0
+
     return {
         "messages_today": messages_today,
         "total_messages": total_messages,
@@ -57,6 +68,13 @@ async def get_stats(
         "page_name": tenant.page_name,
         "is_active": tenant.is_active,
         "channels": channels,
+        "prospects_today": prospects_today,
+        "prospects_total": prospects_total,
+        "prospects_new": prospects_new,
+        "orders_today": orders_today,
+        "orders_total": orders_total,
+        "orders_pending": orders_pending,
+        "conversion_rate": round(conversion_rate, 1),
     }
 
 

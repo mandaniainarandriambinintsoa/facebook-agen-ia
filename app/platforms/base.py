@@ -95,6 +95,24 @@ class PlatformClient(ABC):
             except Exception as e:
                 logger.error(f"Erreur log message: {e}")
 
+            # Detect prospect intent (hot lead)
+            try:
+                from app.rag.prospect_detector import detect_prospect_intent
+                intent = detect_prospect_intent(message_text)
+                if intent:
+                    await crud.create_prospect(
+                        db=db,
+                        tenant_id=tenant.id,
+                        sender_id=sender_id,
+                        channel=channel,
+                        trigger_keyword=intent["keyword"],
+                        trigger_message=message_text,
+                        product_interest=response[:200] if response else "",
+                    )
+                    logger.info(f"Prospect detecte: {intent['keyword']} ({intent['category']}) - {channel}")
+            except Exception as e:
+                logger.error(f"Erreur detection prospect: {e}")
+
         except Exception as e:
             logger.error(f"Erreur traitement message ({channel}): {e}")
             await self.send_message(
