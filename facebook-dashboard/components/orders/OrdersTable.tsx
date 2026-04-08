@@ -129,7 +129,7 @@ export function OrdersTable() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">
-                      {PAYMENT_LABELS[o.payment_method] ?? o.payment_method || "-"}
+                      {PAYMENT_LABELS[o.payment_method] ?? (o.payment_method || "-")}
                     </Badge>
                   </TableCell>
                   <TableCell>
