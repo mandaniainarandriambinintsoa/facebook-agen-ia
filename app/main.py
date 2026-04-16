@@ -70,14 +70,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configuration CORS (frontend Next.js sur Vercel)
+# Configuration CORS (frontend Next.js sur Vercel + domaine custom)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://agent.manda-ia.com",
         "https://facebook-dashboard-nine.vercel.app",
-        "https://facebook-dashboard-mandas-projects-d5939030.vercel.app",
         "http://localhost:3000",
     ],
+    allow_origin_regex=r"https://facebook-dashboard-[a-z0-9-]+-mandas-projects-d5939030\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

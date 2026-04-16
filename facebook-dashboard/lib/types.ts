@@ -79,3 +79,12 @@ export interface PublicConfig {
   facebook_app_id: string;
   oauth_login_url: string;
 }
+
+export interface TenantPlatform {
+  id: string;
+  platform: "messenger" | "instagram" | "whatsapp";
+  platform_id: string;
+  platform_name: string;
+  is_active: boolean;
+  created_at: string | null;
+}

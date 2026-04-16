@@ -11,6 +11,7 @@ import {
   Settings,
   Flame,
   ShoppingCart,
+  Plug,
 } from "lucide-react";
 
 const links = [
@@ -20,6 +21,7 @@ const links = [
   { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
   { href: "/dashboard/products", label: "Produits", icon: Package },
   { href: "/dashboard/knowledge", label: "Connaissances", icon: Brain },
+  { href: "/dashboard/platforms", label: "Plateformes", icon: Plug },
   { href: "/dashboard/config", label: "Configuration", icon: Settings },
 ];
 
