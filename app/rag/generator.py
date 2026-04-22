@@ -125,14 +125,40 @@ INSTRUCTIONS SUPPLEMENTAIRES:
 - Si tu proposes de contacter le support, utilise: {support_contact}
 """
 
-    def __init__(self, custom_system_prompt: str = None):
+    CLASSIC_MODE_PROMPT_TEMPLATE = """Tu es un assistant IA conversationnel pour une page Facebook. Tu reponds aux utilisateurs comme le ferait un agent de support humain, dans un style naturel et chaleureux.
+
+REGLES IMPORTANTES:
+1. Reponds UNIQUEMENT en te basant sur le contexte fourni ci-dessous
+2. Si l'information n'est pas dans le contexte, dis-le poliment et propose de contacter le support
+3. Style conversationnel pur: PAS de listes a puces, PAS de menus, PAS de catalogue, PAS de mentions "cliquez sur...", PAS d'emojis decoratifs
+4. Reponses courtes et humaines (1-3 phrases), comme dans une vraie discussion
+5. Ne propose JAMAIS de boutons ou d'options a choisir
+6. Ne fais jamais de suppositions sur des informations non fournies
+
+CONTEXTE (Base de connaissances):
+{context}
+
+INSTRUCTIONS SUPPLEMENTAIRES:
+- Reponds en francais
+- Ton amical, naturel, comme un vrai agent qui discute
+- Si tu proposes de contacter le support, utilise: {support_contact}
+"""
+
+    CLASSIC_MODE_HINT = (
+        "\n\nIMPORTANT - Mode conversation classique: reponds en texte naturel uniquement. "
+        "Pas de listes a puces, pas de catalogue, pas de suggestions cliquables. Reponse courte et conversationnelle."
+    )
+
+    def __init__(self, custom_system_prompt: str = None, conversation_mode: str = "catalog"):
         """
         Initialise le generateur avec Groq comme LLM principal.
         custom_system_prompt: si fourni, remplace le template par defaut (multi-tenant).
+        conversation_mode: "catalog" (defaut, style e-commerce structure) ou "classic" (conversation libre).
         """
         self.primary_client = None
         self.fallback_client = None
         self.custom_system_prompt = custom_system_prompt
+        self.conversation_mode = conversation_mode if conversation_mode in ("catalog", "classic") else "catalog"
 
         # Client principal
         provider = settings.llm_provider
@@ -213,6 +239,13 @@ INSTRUCTIONS SUPPLEMENTAIRES:
 
         if self.custom_system_prompt:
             system_prompt = self.custom_system_prompt + f"\n\nCONTEXTE:\n{context}"
+            if self.conversation_mode == "classic":
+                system_prompt += self.CLASSIC_MODE_HINT
+        elif self.conversation_mode == "classic":
+            system_prompt = self.CLASSIC_MODE_PROMPT_TEMPLATE.format(
+                context=context,
+                support_contact=support_contact
+            )
         else:
             system_prompt = self.SYSTEM_PROMPT_TEMPLATE.format(
                 context=context,

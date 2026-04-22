@@ -123,9 +123,10 @@ class CommentsHandler:
         from app.rag.confidence import ConfidenceHandler
 
         retriever = PgVectorRetriever(tenant_id=tenant.id, db=db)
-        generator = ResponseGenerator(custom_system_prompt=(
-            tenant_config.custom_system_prompt if tenant_config else None
-        ))
+        generator = ResponseGenerator(
+            custom_system_prompt=(tenant_config.custom_system_prompt if tenant_config else None),
+            conversation_mode=(getattr(tenant_config, "conversation_mode", "catalog") if tenant_config else "catalog"),
+        )
         confidence = ConfidenceHandler()
 
         rag_response = await confidence.process_query_async(query, retriever, generator)

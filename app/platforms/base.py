@@ -74,10 +74,15 @@ class PlatformClient(ABC):
                 message_text, tenant, tenant_config, db
             )
 
-            # Envoyer la reponse avec quick replies contextuels
-            from app.platforms.messenger.commands import get_contextual_quick_replies
-            quick_replies = get_contextual_quick_replies(confidence_level)
-            await self.send_quick_replies(sender_id, response, quick_replies)
+            # Mode classic: reponse texte pure (pas de quick replies/boutons/catalogue)
+            # Mode catalog (default): quick replies contextuels (comportement historique)
+            conversation_mode = getattr(tenant_config, "conversation_mode", "catalog") if tenant_config else "catalog"
+            if conversation_mode == "classic":
+                await self.send_message(sender_id, response)
+            else:
+                from app.platforms.messenger.commands import get_contextual_quick_replies
+                quick_replies = get_contextual_quick_replies(confidence_level)
+                await self.send_quick_replies(sender_id, response, quick_replies)
 
             # Log the message
             from app.db import crud
@@ -131,9 +136,10 @@ class PlatformClient(ABC):
         from app.rag.confidence import ConfidenceHandler
 
         retriever = PgVectorRetriever(tenant_id=tenant.id, db=db)
-        generator = ResponseGenerator(custom_system_prompt=(
-            tenant_config.custom_system_prompt if tenant_config else None
-        ))
+        generator = ResponseGenerator(
+            custom_system_prompt=(tenant_config.custom_system_prompt if tenant_config else None),
+            conversation_mode=(getattr(tenant_config, "conversation_mode", "catalog") if tenant_config else "catalog"),
+        )
         confidence = ConfidenceHandler()
 
         rag_response = await confidence.process_query_async(query, retriever, generator)

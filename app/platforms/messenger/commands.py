@@ -65,8 +65,13 @@ class CommandRouter:
         """
         Tente de traiter l'input comme une commande.
         Retourne True si une commande a ete traitee, False sinon (→ RAG).
+        En mode conversation_mode=classic, toutes les commandes sont bypass pour
+        forcer le texte conversationnel via le pipeline RAG.
         """
         if not input_text:
+            return False
+
+        if self.config and getattr(self.config, "conversation_mode", "catalog") == "classic":
             return False
 
         payload = input_text.strip()

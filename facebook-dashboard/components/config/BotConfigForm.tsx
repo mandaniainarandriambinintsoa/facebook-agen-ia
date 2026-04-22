@@ -27,6 +27,7 @@ const schema = z.object({
   delivery_enabled: z.boolean(),
   phone_numbers: z.string(),
   custom_system_prompt: z.string(),
+  conversation_mode: z.enum(["catalog", "classic"]),
 });
 
 export function BotConfigForm() {
@@ -46,6 +47,7 @@ export function BotConfigForm() {
       delivery_enabled: false,
       phone_numbers: "",
       custom_system_prompt: "",
+      conversation_mode: "catalog",
     },
   });
 
@@ -101,6 +103,33 @@ export function BotConfigForm() {
                 <SelectItem value="custom">Personnalisé</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label>Mode de conversation</Label>
+            <Select
+              value={watch("conversation_mode")}
+              onValueChange={(v) =>
+                setValue("conversation_mode", v as "catalog" | "classic")
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="catalog">
+                  Catalogue — présente produits + boutons/quick replies
+                </SelectItem>
+                <SelectItem value="classic">
+                  Classique — conversation texte pure, sans boutons
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {watch("conversation_mode") === "classic"
+                ? "Le bot répondra uniquement en texte, comme un agent humain. Idéal pour SAV et support conversationnel."
+                : "Le bot propose des produits, boutons et quick replies. Idéal pour e-commerce et conversion."}
+            </p>
           </div>
 
           <div className="flex items-center gap-3">

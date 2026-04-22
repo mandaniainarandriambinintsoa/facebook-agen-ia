@@ -24,6 +24,7 @@ class ConfigUpdate(BaseModel):
     delivery_enabled: Optional[bool] = None
     phone_numbers: Optional[list] = None
     custom_system_prompt: Optional[str] = None
+    conversation_mode: Optional[str] = None  # "catalog" | "classic"
 
 
 # ─── Stats ─────────────────────────────────────────────────
@@ -158,6 +159,7 @@ async def get_config(
         "delivery_enabled": config.delivery_enabled,
         "phone_numbers": config.phone_numbers,
         "custom_system_prompt": config.custom_system_prompt,
+        "conversation_mode": config.conversation_mode or "catalog",
         "onboarding_step": config.onboarding_step,
     }
 
@@ -174,6 +176,8 @@ async def update_config(
         raise HTTPException(status_code=403, detail="Acces refuse")
 
     updates = data.model_dump(exclude_unset=True)
+    if "conversation_mode" in updates and updates["conversation_mode"] not in ("catalog", "classic"):
+        raise HTTPException(status_code=400, detail="conversation_mode must be 'catalog' or 'classic'")
     config = await crud.update_tenant_config(db, tenant.id, **updates)
 
     return {
@@ -182,6 +186,7 @@ async def update_config(
         "bot_type": config.bot_type,
         "delivery_enabled": config.delivery_enabled,
         "custom_system_prompt": config.custom_system_prompt,
+        "conversation_mode": config.conversation_mode,
     }
 
 

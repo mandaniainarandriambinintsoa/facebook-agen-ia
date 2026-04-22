@@ -73,6 +73,7 @@ export interface BotConfig {
   delivery_enabled: boolean;
   phone_numbers: string;
   custom_system_prompt: string;
+  conversation_mode: "catalog" | "classic";
 }
 
 export interface PublicConfig {
