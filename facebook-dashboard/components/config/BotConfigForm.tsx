@@ -77,7 +77,7 @@ export function BotConfigForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
+          <div className="space-y-2">
             <Label>Message d&apos;accueil</Label>
             <Textarea {...register("welcome_message")} rows={3} />
             {errors.welcome_message && (
@@ -87,16 +87,17 @@ export function BotConfigForm() {
             )}
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label>Type de bot</Label>
             <Select
               value={watch("bot_type")}
               onValueChange={(v) => setValue("bot_type", v)}
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="ecommerce">E-commerce</SelectItem>
                 <SelectItem value="support">Support client</SelectItem>
                 <SelectItem value="sales">Vente</SelectItem>
                 <SelectItem value="info">Information</SelectItem>
@@ -105,7 +106,7 @@ export function BotConfigForm() {
             </Select>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label>Mode de conversation</Label>
             <Select
               value={watch("conversation_mode")}
@@ -118,21 +119,21 @@ export function BotConfigForm() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="catalog">
-                  Catalogue — présente produits + boutons/quick replies
+                  Catalogue — produits + boutons
                 </SelectItem>
                 <SelectItem value="classic">
-                  Classique — conversation texte pure, sans boutons
+                  Classique — conversation texte
                 </SelectItem>
               </SelectContent>
             </Select>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {watch("conversation_mode") === "classic"
-                ? "Le bot répondra uniquement en texte, comme un agent humain. Idéal pour SAV et support conversationnel."
+                ? "Le bot répond uniquement en texte, comme un agent humain. Idéal pour SAV et support conversationnel."
                 : "Le bot propose des produits, boutons et quick replies. Idéal pour e-commerce et conversion."}
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pt-2">
             <Switch
               checked={deliveryEnabled}
               onCheckedChange={(v) => setValue("delivery_enabled", v)}
@@ -140,19 +141,21 @@ export function BotConfigForm() {
             <Label>Livraison activée</Label>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label>Numéros de téléphone (séparés par des virgules)</Label>
             <Input {...register("phone_numbers")} />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label>System prompt personnalisé</Label>
             <Textarea {...register("custom_system_prompt")} rows={5} />
           </div>
 
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Enregistrement..." : "Sauvegarder"}
-          </Button>
+          <div className="pt-2">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Enregistrement..." : "Sauvegarder"}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
