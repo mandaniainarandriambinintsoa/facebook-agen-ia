@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,45 +29,68 @@ const schema = z.object({
   conversation_mode: z.enum(["catalog", "classic"]),
 });
 
+const DEFAULT_CONFIG: BotConfig = {
+  welcome_message: "",
+  bot_type: "ecommerce",
+  delivery_enabled: false,
+  phone_numbers: "",
+  custom_system_prompt: "",
+  conversation_mode: "catalog",
+};
+
+function normalizeConfig(raw: Partial<BotConfig> | null | undefined): BotConfig {
+  if (!raw) return DEFAULT_CONFIG;
+  return {
+    welcome_message: raw.welcome_message ?? "",
+    bot_type: raw.bot_type ?? "ecommerce",
+    delivery_enabled: raw.delivery_enabled ?? false,
+    phone_numbers: Array.isArray(raw.phone_numbers)
+      ? raw.phone_numbers.join(", ")
+      : (raw.phone_numbers ?? ""),
+    custom_system_prompt: raw.custom_system_prompt ?? "",
+    conversation_mode: raw.conversation_mode ?? "catalog",
+  };
+}
+
 export function BotConfigForm() {
   const { config, isLoading, updateConfig } = useConfig();
+
+  if (isLoading) {
+    return <p className="text-muted-foreground">Chargement...</p>;
+  }
+
+  return <BotConfigFormInner initial={normalizeConfig(config)} onSubmit={updateConfig} />;
+}
+
+function BotConfigFormInner({
+  initial,
+  onSubmit,
+}: {
+  initial: BotConfig;
+  onSubmit: (data: BotConfig) => Promise<void>;
+}) {
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<BotConfig>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      welcome_message: "",
-      bot_type: "support",
-      delivery_enabled: false,
-      phone_numbers: "",
-      custom_system_prompt: "",
-      conversation_mode: "catalog",
-    },
+    defaultValues: initial,
   });
 
-  useEffect(() => {
-    if (config) reset(config);
-  }, [config, reset]);
-
-  const deliveryEnabled = watch("delivery_enabled");
-
-  const onSubmit = async (data: BotConfig) => {
+  const handleFormSubmit = async (data: BotConfig) => {
     try {
-      await updateConfig(data);
+      await onSubmit(data);
       toast.success("Configuration sauvegardée");
     } catch {
       toast.error("Erreur lors de la sauvegarde");
     }
   };
 
-  if (isLoading) {
-    return <p className="text-muted-foreground">Chargement...</p>;
-  }
+  const deliveryEnabled = watch("delivery_enabled");
+  const conversationMode = watch("conversation_mode");
 
   return (
     <Card>
@@ -76,7 +98,7 @@ export function BotConfigForm() {
         <CardTitle>Configuration du bot</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label>Message d&apos;accueil</Label>
             <Textarea {...register("welcome_message")} rows={3} />
@@ -109,7 +131,7 @@ export function BotConfigForm() {
           <div className="space-y-2">
             <Label>Mode de conversation</Label>
             <Select
-              value={watch("conversation_mode")}
+              value={conversationMode}
               onValueChange={(v) =>
                 setValue("conversation_mode", v as "catalog" | "classic")
               }
@@ -127,7 +149,7 @@ export function BotConfigForm() {
               </SelectContent>
             </Select>
             <p className="text-sm text-muted-foreground">
-              {watch("conversation_mode") === "classic"
+              {conversationMode === "classic"
                 ? "Le bot répond uniquement en texte, comme un agent humain. Idéal pour SAV et support conversationnel."
                 : "Le bot propose des produits, boutons et quick replies. Idéal pour e-commerce et conversion."}
             </p>
