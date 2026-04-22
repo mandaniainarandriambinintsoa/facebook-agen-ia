@@ -374,6 +374,22 @@ async def get_messages(
     return list(result.scalars().all())
 
 
+async def get_messages_by_sender(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    sender_id: str,
+    limit: int = 4,
+) -> list[MessageLog]:
+    """Derniers messages d'un sender specifique (pour l'historique conversationnel du RAG)"""
+    result = await db.execute(
+        select(MessageLog)
+        .where(MessageLog.tenant_id == tenant_id, MessageLog.sender_id == sender_id)
+        .order_by(MessageLog.created_at.desc())
+        .limit(limit)
+    )
+    return list(result.scalars().all())
+
+
 async def count_messages(db: AsyncSession, tenant_id: uuid.UUID) -> int:
     """Compte les messages d'un tenant"""
     result = await db.execute(

@@ -74,9 +74,21 @@ class PlatformClient(ABC):
                 await onboarding.handle_message(sender_id, message_text)
                 return
 
-            # Generate RAG response
+            # Fetch recent chat history for this sender (conversation memory)
+            from app.db import crud
+            chat_history: list[dict] = []
+            try:
+                recent_logs = await crud.get_messages_by_sender(db, tenant.id, sender_id, limit=4)
+                # MessageLog renvoye en DESC, on repasse en chronologique
+                for log in reversed(recent_logs):
+                    chat_history.append({"role": "user", "content": log.message_text or ""})
+                    chat_history.append({"role": "assistant", "content": log.response_text or ""})
+            except Exception as e:
+                logger.warning(f"Echec lecture historique sender {sender_id}: {e}")
+
+            # Generate RAG response (avec historique pour resoudre les references implicites)
             response, confidence_level, confidence_score, top_image_url = await self._generate_rag_response_mt(
-                message_text, tenant, tenant_config, db
+                message_text, tenant, tenant_config, db, chat_history=chat_history,
             )
 
             # Mode classic: reponse texte pure (pas de quick replies/boutons/catalogue)
@@ -84,8 +96,10 @@ class PlatformClient(ABC):
             conversation_mode = getattr(tenant_config, "conversation_mode", "catalog") if tenant_config else "catalog"
             if conversation_mode == "classic":
                 await self.send_message(sender_id, response)
-                # Si le top document RAG a une image pertinente, on l'envoie apres le texte
-                if top_image_url and confidence_level in ("high", "medium"):
+                # Si le top document RAG a une image pertinente, on l'envoie apres le texte.
+                # On inclut "low" car en pratique les scores RAG sont dans la fourchette
+                # 0.3-0.5 meme pour du matching correct (embeddings courts vs contenus longs).
+                if top_image_url and confidence_level in ("high", "medium", "low"):
                     try:
                         await self.send_image(sender_id, top_image_url)
                     except Exception as e:
@@ -139,7 +153,8 @@ class PlatformClient(ABC):
             await self.send_typing_indicator(sender_id, False)
 
     async def _generate_rag_response_mt(
-        self, query: str, tenant, tenant_config, db
+        self, query: str, tenant, tenant_config, db,
+        chat_history: list[dict] | None = None,
     ) -> tuple[str, str, float, str | None]:
         """Genere une reponse RAG multi-tenant via PgVectorRetriever.
 
@@ -158,7 +173,9 @@ class PlatformClient(ABC):
         )
         confidence = ConfidenceHandler()
 
-        rag_response = await confidence.process_query_async(query, retriever, generator)
+        rag_response = await confidence.process_query_async(
+            query, retriever, generator, chat_history=chat_history,
+        )
 
         logger.info(
             f"RAG {tenant.page_name} — Confiance: {rag_response.confidence_level.value} "

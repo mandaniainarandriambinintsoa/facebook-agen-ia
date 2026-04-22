@@ -221,15 +221,22 @@ INSTRUCTIONS SUPPLEMENTAIRES:
         self,
         query: str,
         documents: List[RetrievedDocument],
-        confidence_level: str = "high"
+        confidence_level: str = "high",
+        chat_history: list[dict] | None = None,
     ) -> str:
         """
         Genere une reponse a partir de la requete et des documents
 
         Args:
-            query: Question de l'utilisateur
+            query: Question actuelle de l'utilisateur
             documents: Documents recuperes par le retriever
-            confidence_level: Niveau de confiance ("high", "medium", "low")
+            confidence_level: Niveau de confiance ("high", "medium", "low", "none")
+            chat_history: Liste ordonnee chronologiquement de dicts
+                {"role": "user"|"assistant", "content": str}
+                representant les echanges precedents avec ce meme utilisateur.
+                Permet au LLM de comprendre les references implicites (ex: le client
+                ecrit "noir" apres avoir demande une casquette → le LLM sait que
+                "noir" refere a la couleur de la casquette).
 
         Returns:
             Reponse generee
@@ -252,20 +259,45 @@ INSTRUCTIONS SUPPLEMENTAIRES:
                 support_contact=support_contact
             )
 
+        # Construction du bloc historique si dispo
+        history_block = ""
+        if chat_history:
+            lines = []
+            for turn in chat_history[-6:]:
+                label = "CLIENT" if turn.get("role") == "user" else "TOI"
+                content = (turn.get("content") or "").strip()
+                if content:
+                    lines.append(f"{label}: {content}")
+            if lines:
+                history_block = (
+                    "HISTORIQUE RECENT DE LA CONVERSATION:\n"
+                    + "\n".join(lines)
+                    + "\n\n"
+                )
+
         # Adapter le prompt selon le niveau de confiance
         if confidence_level == "low":
-            user_prompt = f"""Question de l'utilisateur: {query}
-
-ATTENTION: Le niveau de confiance est faible. Les informations disponibles ne correspondent peut-etre pas bien a la question.
-Reponds avec prudence et propose de contacter le support si necessaire."""
+            user_prompt = (
+                f"{history_block}NOUVEAU MESSAGE DU CLIENT: {query}\n\n"
+                "Reponds au nouveau message en tenant compte du contexte ci-dessus. "
+                "La confiance RAG est faible, ne fais pas d'affirmation hasardeuse."
+            )
         elif confidence_level == "medium":
-            user_prompt = f"""Question de l'utilisateur: {query}
-
-Note: Le niveau de confiance est moyen. Reponds en te basant sur les informations disponibles, mais mentionne que l'utilisateur peut contacter le support pour plus de details."""
+            user_prompt = (
+                f"{history_block}NOUVEAU MESSAGE DU CLIENT: {query}\n\n"
+                "Reponds au nouveau message en tenant compte de l'historique."
+            )
+        elif confidence_level == "none":
+            user_prompt = (
+                f"{history_block}NOUVEAU MESSAGE DU CLIENT: {query}\n\n"
+                "Reponds naturellement. Si aucune info pertinente, fais une reponse "
+                "breve et invite le client a preciser sa demande."
+            )
         else:
-            user_prompt = f"""Question de l'utilisateur: {query}
-
-Reponds de maniere claire et concise."""
+            user_prompt = (
+                f"{history_block}NOUVEAU MESSAGE DU CLIENT: {query}\n\n"
+                "Reponds de maniere claire et concise en tenant compte de l'historique."
+            )
 
         try:
             response = self._call_llm(user_prompt, system_prompt)

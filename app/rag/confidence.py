@@ -80,15 +80,37 @@ class ConfidenceHandler:
         query: str,
         retriever,
         generator: ResponseGenerator,
+        chat_history: list[dict] | None = None,
     ) -> RAGResponse:
         """
         Version async de process_query pour le PgVectorRetriever.
         Le retriever doit avoir une methode retrieve() async.
+
+        chat_history: historique conversationnel chronologique
+            [{"role": "user"|"assistant", "content": str}, ...]
+            sert a (1) augmenter la requete RAG pour capturer les references
+            implicites ("noir" apres "casquette" → retrieve sur "casquette noir"),
+            et (2) est passe au generator pour que le LLM comprenne le contexte.
         """
-        documents, avg_score = await retriever.retrieve(query)
+        # Augmentation de la requete RAG : concatener les derniers messages user
+        # pour que la similarite vectorielle capture le vrai sujet.
+        augmented_query = query
+        if chat_history:
+            recent_user = [
+                t["content"].strip()
+                for t in chat_history[-6:]
+                if t.get("role") == "user" and (t.get("content") or "").strip()
+            ][-2:]
+            if recent_user:
+                augmented_query = " ".join(recent_user + [query])
+
+        documents, avg_score = await retriever.retrieve(augmented_query)
         confidence_level = self._get_confidence_level(avg_score)
 
-        logger.info(f"Query: '{query[:50]}...' | Score: {avg_score:.3f} | Level: {confidence_level.value}")
+        logger.info(
+            f"Query: '{query[:50]}...' | Augmented: '{augmented_query[:60]}...' | "
+            f"Score: {avg_score:.3f} | Level: {confidence_level.value}"
+        )
 
         top_doc = documents[0] if documents else None
 
@@ -101,6 +123,7 @@ class ConfidenceHandler:
             query=query,
             documents=documents,
             confidence_level=confidence_level.value,
+            chat_history=chat_history,
         )
         return RAGResponse(
             response=response,
