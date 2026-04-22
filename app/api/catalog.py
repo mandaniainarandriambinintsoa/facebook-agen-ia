@@ -121,7 +121,14 @@ async def upload_catalog(
 
     # Generer les embeddings
     texts = [_product_to_text(p) for p in products_data]
-    metadatas = [{"source": "catalog", "product_name": p.get("name", "")} for p in products_data]
+    metadatas = [
+        {
+            "source": "catalog",
+            "product_name": p.get("name", ""),
+            "image_url": p.get("image_url", "") or "",
+        }
+        for p in products_data
+    ]
 
     retriever = PgVectorRetriever(tenant_id=tenant.id, db=db)
     await retriever.add_documents(texts, metadatas)
@@ -236,7 +243,14 @@ async def reindex_products(
         "category": p.category, "sizes": p.sizes, "colors": p.colors,
         "stock_status": p.stock_status,
     }) for p in products]
-    metadatas = [{"source": "catalog", "product_name": p.name} for p in products]
+    metadatas = [
+        {
+            "source": "catalog",
+            "product_name": p.name,
+            "image_url": p.image_url or "",
+        }
+        for p in products
+    ]
 
     retriever = PgVectorRetriever(tenant_id=tenant.id, db=db)
     await retriever.add_documents(texts, metadatas)

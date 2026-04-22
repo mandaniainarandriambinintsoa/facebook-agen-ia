@@ -151,6 +151,35 @@ class WhatsAppClient(PlatformClient):
         """WhatsApp n'a pas de typing indicator natif — no-op"""
         pass
 
+    async def send_image(self, recipient_phone: str, image_url: str, caption: str = ""):
+        """Envoie une image via WhatsApp Cloud API (type=image, link=url)"""
+        if not self.access_token or not image_url:
+            return
+
+        image_payload = {"link": image_url}
+        if caption:
+            image_payload["caption"] = caption[:1024]
+
+        payload = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": recipient_phone,
+            "type": "image",
+            "image": image_payload,
+        }
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    self._get_url(),
+                    headers=self._get_headers(),
+                    json=payload,
+                )
+                if response.status_code != 200:
+                    logger.error(f"[WhatsApp] send_image erreur {response.status_code}: {response.text}")
+            except httpx.HTTPError as e:
+                logger.error(f"[WhatsApp] Erreur envoi image: {e}")
+
     async def mark_as_read(self, message_id: str):
         """Marque un message comme lu (ticks bleus)"""
         if not self.access_token or not message_id:

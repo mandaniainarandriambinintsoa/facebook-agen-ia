@@ -239,3 +239,29 @@ class MessengerClient(PlatformClient):
                 await client.post(url, params=params, json=payload)
             except httpx.HTTPError:
                 pass
+
+    async def send_image(self, recipient_id: str, image_url: str, caption: str = ""):
+        """Envoie une image via son URL publique (attachment type=image)"""
+        if not self.access_token or not image_url:
+            return
+
+        url = f"{self.GRAPH_API_URL}/me/messages"
+        params = {"access_token": self.access_token}
+        payload = {
+            "recipient": {"id": recipient_id},
+            "message": {
+                "attachment": {
+                    "type": "image",
+                    "payload": {"url": image_url, "is_reusable": True},
+                }
+            },
+            "messaging_type": "RESPONSE",
+        }
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(url, params=params, json=payload)
+                if response.status_code != 200:
+                    logger.error(f"Messenger send_image erreur {response.status_code}: {response.text}")
+            except httpx.HTTPError as e:
+                logger.error(f"Erreur envoi image: {e}")

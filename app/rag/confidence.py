@@ -30,6 +30,7 @@ class RAGResponse:
     documents_used: int
     should_escalate: bool
     escalation_message: str | None = None
+    top_document: RetrievedDocument | None = None
 
 
 class ConfidenceHandler:
@@ -89,6 +90,8 @@ class ConfidenceHandler:
 
         logger.info(f"Query: '{query[:50]}...' | Score: {avg_score:.3f} | Level: {confidence_level.value}")
 
+        top_doc = documents[0] if documents else None
+
         if confidence_level == ConfidenceLevel.NONE:
             return RAGResponse(
                 response=self._get_escalation_message(),
@@ -97,6 +100,7 @@ class ConfidenceHandler:
                 documents_used=0,
                 should_escalate=True,
                 escalation_message="Confiance trop faible pour repondre automatiquement",
+                top_document=top_doc,
             )
 
         response = generator.generate_response(
@@ -111,6 +115,7 @@ class ConfidenceHandler:
             documents_used=len(documents),
             should_escalate=False,
             escalation_message="Proposition de contact support incluse" if confidence_level == ConfidenceLevel.LOW else None,
+            top_document=top_doc,
         )
 
     def should_respond(self, score: float) -> bool:

@@ -47,6 +47,11 @@ class PlatformClient(ABC):
         """Envoie l'indicateur de frappe (no-op si pas supporte)"""
         ...
 
+    async def send_image(self, recipient_id: str, image_url: str, caption: str = ""):
+        """Envoie une image via son URL publique. Default: fallback texte si non implemente."""
+        fallback = f"{caption}\n{image_url}" if caption else image_url
+        await self.send_message(recipient_id, fallback)
+
     # ─── Pipeline RAG partage (toutes plateformes) ───
 
     async def handle_message_mt(
@@ -70,7 +75,7 @@ class PlatformClient(ABC):
                 return
 
             # Generate RAG response
-            response, confidence_level, confidence_score = await self._generate_rag_response_mt(
+            response, confidence_level, confidence_score, top_image_url = await self._generate_rag_response_mt(
                 message_text, tenant, tenant_config, db
             )
 
@@ -79,6 +84,12 @@ class PlatformClient(ABC):
             conversation_mode = getattr(tenant_config, "conversation_mode", "catalog") if tenant_config else "catalog"
             if conversation_mode == "classic":
                 await self.send_message(sender_id, response)
+                # Si le top document RAG a une image pertinente, on l'envoie apres le texte
+                if top_image_url and confidence_level in ("high", "medium"):
+                    try:
+                        await self.send_image(sender_id, top_image_url)
+                    except Exception as e:
+                        logger.error(f"Erreur envoi image (classic mode): {e}")
             else:
                 from app.platforms.messenger.commands import get_contextual_quick_replies
                 quick_replies = get_contextual_quick_replies(confidence_level)
@@ -129,8 +140,13 @@ class PlatformClient(ABC):
 
     async def _generate_rag_response_mt(
         self, query: str, tenant, tenant_config, db
-    ) -> tuple[str, str, float]:
-        """Genere une reponse RAG multi-tenant via PgVectorRetriever"""
+    ) -> tuple[str, str, float, str | None]:
+        """Genere une reponse RAG multi-tenant via PgVectorRetriever.
+
+        Returns (response_text, confidence_level, confidence_score, top_image_url).
+        top_image_url est l'URL image du document le plus pertinent (si presente dans
+        metadata), sinon None.
+        """
         from app.rag.pg_retriever import PgVectorRetriever
         from app.rag.generator import ResponseGenerator
         from app.rag.confidence import ConfidenceHandler
@@ -149,10 +165,17 @@ class PlatformClient(ABC):
             f"({rag_response.confidence_score:.2f})"
         )
 
+        top_image_url = None
+        if rag_response.top_document and rag_response.top_document.metadata:
+            url = rag_response.top_document.metadata.get("image_url")
+            if url and isinstance(url, str) and url.startswith(("http://", "https://")):
+                top_image_url = url
+
         return (
             rag_response.response,
             rag_response.confidence_level.value,
             rag_response.confidence_score,
+            top_image_url,
         )
 
     def _split_long_message(self, text: str, max_length: int = 2000) -> List[str]:
