@@ -92,17 +92,11 @@ class ConfidenceHandler:
 
         top_doc = documents[0] if documents else None
 
-        if confidence_level == ConfidenceLevel.NONE:
-            return RAGResponse(
-                response=self._get_escalation_message(),
-                confidence_level=confidence_level,
-                confidence_score=avg_score,
-                documents_used=0,
-                should_escalate=True,
-                escalation_message="Confiance trop faible pour repondre automatiquement",
-                top_document=top_doc,
-            )
-
+        # On appelle toujours le LLM, meme en confiance NONE :
+        # le system prompt (par defaut ou custom) sait gerer les requetes vagues
+        # comme "bonjour", "ok", "merci" avec une reponse polie.
+        # Ne jamais injecter un message hardcode avec les env support_email/phone
+        # car ca leak des valeurs placeholder et ignore le prompt custom du tenant.
         response = generator.generate_response(
             query=query,
             documents=documents,
@@ -113,8 +107,12 @@ class ConfidenceHandler:
             confidence_level=confidence_level,
             confidence_score=avg_score,
             documents_used=len(documents),
-            should_escalate=False,
-            escalation_message="Proposition de contact support incluse" if confidence_level == ConfidenceLevel.LOW else None,
+            should_escalate=(confidence_level == ConfidenceLevel.NONE),
+            escalation_message=(
+                "Confiance RAG tres faible" if confidence_level == ConfidenceLevel.NONE
+                else "Proposition de contact support incluse" if confidence_level == ConfidenceLevel.LOW
+                else None
+            ),
             top_document=top_doc,
         )
 
