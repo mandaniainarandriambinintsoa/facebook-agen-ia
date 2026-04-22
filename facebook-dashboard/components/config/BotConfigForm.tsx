@@ -82,7 +82,11 @@ function BotConfigFormInner({
 
   const handleFormSubmit = async (data: BotConfig) => {
     try {
-      await onSubmit(data);
+      const phonesArr = (data.phone_numbers ?? "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      await onSubmit({ ...data, phone_numbers: phonesArr as unknown as string });
       toast.success("Configuration sauvegardée");
     } catch {
       toast.error("Erreur lors de la sauvegarde");
