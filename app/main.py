@@ -66,7 +66,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Agent IA Meta — SaaS Multi-Plateforme",
     description="Plateforme SaaS pour chatbots IA (Messenger, Instagram, WhatsApp) avec RAG",
-    version="3.0.0",
+    version="3.3.1",
     lifespan=lifespan
 )
 
