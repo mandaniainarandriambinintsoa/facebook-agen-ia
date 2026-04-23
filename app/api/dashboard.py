@@ -3,6 +3,7 @@ Dashboard API — stats, config, messages, knowledge
 """
 
 import uuid
+from datetime import date, datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
@@ -127,14 +128,18 @@ async def get_messages_chart(
     if str(tenant.id) != tenant_id:
         raise HTTPException(status_code=403, detail="Acces refuse")
 
-    data = await crud.get_messages_per_day(db, tenant.id, days=days)
-    return {
-        "days": days,
-        "data": [
-            {"date": str(row.day), "count": row.count}
-            for row in data
-        ],
-    }
+    raw = await crud.get_messages_per_day(db, tenant.id, days=days)
+    counts: dict[date, int] = {row.day: row.count for row in raw}
+
+    today = datetime.now(timezone.utc).date()
+    series = [
+        {
+            "date": (today - timedelta(days=i)).isoformat(),
+            "count": counts.get(today - timedelta(days=i), 0),
+        }
+        for i in range(days - 1, -1, -1)
+    ]
+    return {"days": days, "data": series}
 
 
 # ─── Config ───────────────────────────────────────────────

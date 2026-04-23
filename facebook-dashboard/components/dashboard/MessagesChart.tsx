@@ -3,8 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMessagesChart } from "@/hooks/useMessages";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -27,8 +27,8 @@ export function MessagesChart() {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData || []}>
-              <CartesianGrid strokeDasharray="3 3" />
+            <BarChart data={chartData || []} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="date"
                 tickFormatter={(v) =>
@@ -38,21 +38,23 @@ export function MessagesChart() {
                   })
                 }
                 fontSize={12}
+                interval="preserveStartEnd"
+                minTickGap={24}
               />
-              <YAxis fontSize={12} />
+              <YAxis fontSize={12} allowDecimals={false} />
               <Tooltip
                 labelFormatter={(v) =>
                   new Date(v).toLocaleDateString("fr-FR")
                 }
+                cursor={{ fill: "rgba(0,0,0,0.04)" }}
               />
-              <Line
-                type="monotone"
+              <Bar
                 dataKey="count"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-                dot={false}
+                fill="#0ea5e9"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={32}
               />
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         )}
       </CardContent>
