@@ -12,13 +12,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export function MessagesChart() {
-  const { chartData, isLoading } = useMessagesChart(30);
+interface Props {
+  days: number;
+}
+
+export function MessagesChart({ days }: Props) {
+  const { chartData, isLoading } = useMessagesChart(days);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Messages par jour (30j)</CardTitle>
+        <CardTitle>Messages par jour ({days}j)</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (

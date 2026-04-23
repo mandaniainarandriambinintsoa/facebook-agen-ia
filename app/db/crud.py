@@ -410,6 +410,28 @@ async def count_messages_today(db: AsyncSession, tenant_id: uuid.UUID) -> int:
     return result.scalar() or 0
 
 
+async def count_messages_since(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> int:
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    result = await db.execute(
+        select(func.count(MessageLog.id)).where(
+            MessageLog.tenant_id == tenant_id,
+            MessageLog.created_at >= since,
+        )
+    )
+    return result.scalar() or 0
+
+
+async def get_avg_confidence_since(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> float:
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    result = await db.execute(
+        select(func.avg(MessageLog.confidence_score)).where(
+            MessageLog.tenant_id == tenant_id,
+            MessageLog.created_at >= since,
+        )
+    )
+    return result.scalar() or 0.0
+
+
 async def get_messages_per_day(
     db: AsyncSession,
     tenant_id: uuid.UUID,
@@ -548,6 +570,17 @@ async def count_prospects_today(db: AsyncSession, tenant_id: uuid.UUID) -> int:
     return result.scalar() or 0
 
 
+async def count_prospects_since(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> int:
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    result = await db.execute(
+        select(func.count(Prospect.id)).where(
+            Prospect.tenant_id == tenant_id,
+            Prospect.created_at >= since,
+        )
+    )
+    return result.scalar() or 0
+
+
 async def count_prospects_this_week(db: AsyncSession, tenant_id: uuid.UUID) -> int:
     """Compte les prospects de la semaine"""
     week_start = datetime.now(timezone.utc) - timedelta(days=7)
@@ -659,6 +692,17 @@ async def count_orders_today(db: AsyncSession, tenant_id: uuid.UUID) -> int:
         select(func.count(Order.id)).where(
             Order.tenant_id == tenant_id,
             Order.created_at >= today_start,
+        )
+    )
+    return result.scalar() or 0
+
+
+async def count_orders_since(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> int:
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    result = await db.execute(
+        select(func.count(Order.id)).where(
+            Order.tenant_id == tenant_id,
+            Order.created_at >= since,
         )
     )
     return result.scalar() or 0

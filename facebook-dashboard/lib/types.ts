@@ -6,17 +6,18 @@ export interface Tenant {
 }
 
 export interface Stats {
-  messages_today: number;
-  messages_total: number;
+  period_days: number;
+  messages_period: number;
+  prospects_period: number;
+  orders_period: number;
   avg_confidence: number;
+  conversion_rate: number;
+  orders_pending: number;
   products_count: number;
-  prospects_today: number;
+  total_messages: number;
   prospects_total: number;
   prospects_new: number;
-  orders_today: number;
   orders_total: number;
-  orders_pending: number;
-  conversion_rate: number;
 }
 
 export interface ChartPoint {

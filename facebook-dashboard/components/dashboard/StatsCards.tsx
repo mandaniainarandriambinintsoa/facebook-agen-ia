@@ -4,19 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStats } from "@/hooks/useStats";
 import { MessageSquare, TrendingUp, Target, Package, Flame, ShoppingCart } from "lucide-react";
 
-export function StatsCards() {
-  const { stats, isLoading } = useStats();
+interface Props {
+  days: number;
+}
+
+export function StatsCards({ days }: Props) {
+  const { stats, isLoading } = useStats(days);
+  const periodLabel = `${days}j`;
 
   const cards = [
     {
-      title: "Messages aujourd'hui",
-      value: stats?.messages_today ?? 0,
+      title: `Messages ${periodLabel}`,
+      value: stats?.messages_period ?? 0,
       icon: MessageSquare,
       color: "",
     },
     {
-      title: "Prospects aujourd'hui",
-      value: stats?.prospects_today ?? 0,
+      title: `Prospects ${periodLabel}`,
+      value: stats?.prospects_period ?? 0,
       icon: Flame,
       color: "text-red-500",
     },
@@ -27,13 +32,13 @@ export function StatsCards() {
       color: "text-orange-500",
     },
     {
-      title: "Taux conversion",
+      title: `Taux conversion ${periodLabel}`,
       value: `${stats?.conversion_rate ?? 0}%`,
       icon: TrendingUp,
       color: "text-green-500",
     },
     {
-      title: "Confiance moyenne",
+      title: `Confiance moyenne ${periodLabel}`,
       value: stats ? `${(stats.avg_confidence * 100).toFixed(0)}%` : "0%",
       icon: Target,
       color: "",

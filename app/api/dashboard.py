@@ -33,50 +33,49 @@ class ConfigUpdate(BaseModel):
 @router.get("/{tenant_id}/stats")
 async def get_stats(
     tenant_id: str,
+    days: int = Query(30, ge=1, le=90),
     tenant: Tenant = Depends(get_current_tenant),
     db: AsyncSession = Depends(get_db),
 ):
-    """Stats globales du tenant"""
+    """Stats globales du tenant, filtrees sur les `days` derniers jours."""
     if str(tenant.id) != tenant_id:
         raise HTTPException(status_code=403, detail="Acces refuse")
 
     tid = tenant.id
-    messages_today = await crud.count_messages_today(db, tid)
+
+    messages_period = await crud.count_messages_since(db, tid, days)
+    prospects_period = await crud.count_prospects_since(db, tid, days)
+    orders_period = await crud.count_orders_since(db, tid, days)
+    avg_confidence = await crud.get_avg_confidence_since(db, tid, days)
+
     total_messages = await crud.count_messages(db, tid)
-    avg_confidence = await crud.get_avg_confidence(db, tid)
     products_count = await crud.count_products(db, tid)
     embeddings_count = await crud.count_embeddings(db, tid)
-
-    # Stats par channel
     channels = await crud.count_messages_by_channel(db, tid)
-
-    # Stats prospects et commandes
-    prospects_today = await crud.count_prospects_today(db, tid)
     prospects_total = await crud.count_prospects(db, tid)
     prospects_new = await crud.count_prospects(db, tid, status="new")
-    orders_today = await crud.count_orders_today(db, tid)
     orders_total = await crud.count_orders(db, tid)
     orders_pending = await crud.count_orders(db, tid, status="pending")
 
-    # Taux de conversion
-    conversion_rate = (orders_total / prospects_total * 100) if prospects_total > 0 else 0
+    conversion_rate = (orders_period / prospects_period * 100) if prospects_period > 0 else 0
 
     return {
-        "messages_today": messages_today,
-        "total_messages": total_messages,
+        "period_days": days,
+        "messages_period": messages_period,
+        "prospects_period": prospects_period,
+        "orders_period": orders_period,
         "avg_confidence": round(avg_confidence, 3),
+        "conversion_rate": round(conversion_rate, 1),
+        "orders_pending": orders_pending,
         "products_count": products_count,
+        "total_messages": total_messages,
         "embeddings_count": embeddings_count,
         "page_name": tenant.page_name,
         "is_active": tenant.is_active,
         "channels": channels,
-        "prospects_today": prospects_today,
         "prospects_total": prospects_total,
         "prospects_new": prospects_new,
-        "orders_today": orders_today,
         "orders_total": orders_total,
-        "orders_pending": orders_pending,
-        "conversion_rate": round(conversion_rate, 1),
     }
 
 
