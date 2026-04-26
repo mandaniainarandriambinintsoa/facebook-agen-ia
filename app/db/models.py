@@ -77,6 +77,7 @@ class TenantConfig(Base):
     phone_numbers = Column(JSONB, default=list)
     custom_system_prompt = Column(Text, nullable=True)
     conversation_mode = Column(String(20), default="catalog", nullable=False)  # catalog | classic
+    auto_comment_reply = Column(Boolean, default=False, nullable=False)
     onboarding_step = Column(String(50), default="welcome")
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 

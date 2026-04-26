@@ -208,22 +208,32 @@ async def process_page_change_mt(change: dict, tenant, tenant_config, db):
     value = change.get("value", {})
 
     if field == "feed" and value.get("item") == "comment":
+        # Gate: feature opt-in par tenant
+        if not (tenant_config and getattr(tenant_config, "auto_comment_reply", False)):
+            logger.debug(f"[Comment] auto_comment_reply desactive pour tenant {tenant.id}, skip")
+            return
+
         comment_id = value.get("comment_id")
         post_id = value.get("post_id")
         message = value.get("message", "")
         from_user = value.get("from", {})
 
-        if from_user.get("id") != tenant.page_id:
-            mt_handler = CommentsHandler(access_token=tenant.page_access_token)
-            await mt_handler.handle_comment_mt(
-                comment_id=comment_id,
-                post_id=post_id,
-                message=message,
-                from_user=from_user,
-                tenant=tenant,
-                tenant_config=tenant_config,
-                db=db,
-            )
+        # Skip les commentaires de la page elle-meme et les commentaires sans texte
+        if not message or not comment_id:
+            return
+        if from_user.get("id") == tenant.page_id:
+            return
+
+        mt_handler = CommentsHandler(access_token=tenant.page_access_token)
+        await mt_handler.handle_comment_mt(
+            comment_id=comment_id,
+            post_id=post_id,
+            message=message,
+            from_user=from_user,
+            tenant=tenant,
+            tenant_config=tenant_config,
+            db=db,
+        )
 
 
 # ═══════════════════════════════════════════════════════════════

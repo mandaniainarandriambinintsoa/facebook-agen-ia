@@ -26,6 +26,7 @@ class ConfigUpdate(BaseModel):
     phone_numbers: Optional[list] = None
     custom_system_prompt: Optional[str] = None
     conversation_mode: Optional[str] = None  # "catalog" | "classic"
+    auto_comment_reply: Optional[bool] = None
 
 
 # ─── Stats ─────────────────────────────────────────────────
@@ -164,6 +165,7 @@ async def get_config(
         "phone_numbers": config.phone_numbers,
         "custom_system_prompt": config.custom_system_prompt,
         "conversation_mode": config.conversation_mode or "catalog",
+        "auto_comment_reply": bool(config.auto_comment_reply),
         "onboarding_step": config.onboarding_step,
     }
 
@@ -191,6 +193,7 @@ async def update_config(
         "delivery_enabled": config.delivery_enabled,
         "custom_system_prompt": config.custom_system_prompt,
         "conversation_mode": config.conversation_mode,
+        "auto_comment_reply": bool(config.auto_comment_reply),
     }
 
 

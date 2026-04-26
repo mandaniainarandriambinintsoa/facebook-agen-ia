@@ -75,6 +75,7 @@ export interface BotConfig {
   phone_numbers: string;
   custom_system_prompt: string;
   conversation_mode: "catalog" | "classic";
+  auto_comment_reply: boolean;
 }
 
 export interface PublicConfig {

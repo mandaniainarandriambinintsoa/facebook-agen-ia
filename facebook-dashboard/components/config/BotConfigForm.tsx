@@ -27,6 +27,7 @@ const schema = z.object({
   phone_numbers: z.string(),
   custom_system_prompt: z.string(),
   conversation_mode: z.enum(["catalog", "classic"]),
+  auto_comment_reply: z.boolean(),
 });
 
 const DEFAULT_CONFIG: BotConfig = {
@@ -36,6 +37,7 @@ const DEFAULT_CONFIG: BotConfig = {
   phone_numbers: "",
   custom_system_prompt: "",
   conversation_mode: "catalog",
+  auto_comment_reply: false,
 };
 
 function normalizeConfig(raw: Partial<BotConfig> | null | undefined): BotConfig {
@@ -49,6 +51,7 @@ function normalizeConfig(raw: Partial<BotConfig> | null | undefined): BotConfig 
       : (raw.phone_numbers ?? ""),
     custom_system_prompt: raw.custom_system_prompt ?? "",
     conversation_mode: raw.conversation_mode ?? "catalog",
+    auto_comment_reply: raw.auto_comment_reply ?? false,
   };
 }
 
@@ -95,6 +98,7 @@ function BotConfigFormInner({
 
   const deliveryEnabled = watch("delivery_enabled");
   const conversationMode = watch("conversation_mode");
+  const autoCommentReply = watch("auto_comment_reply");
 
   return (
     <Card>
@@ -165,6 +169,21 @@ function BotConfigFormInner({
               onCheckedChange={(v) => setValue("delivery_enabled", v)}
             />
             <Label>Livraison activée</Label>
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={autoCommentReply}
+                onCheckedChange={(v) => setValue("auto_comment_reply", v)}
+              />
+              <Label>Réponse automatique aux commentaires Facebook</Label>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {autoCommentReply
+                ? "L'IA classe chaque commentaire et engage uniquement les vrais prospects (questions, prix, demande MP) en envoyant une réponse publique courte + un message privé personnalisé."
+                : "Activez pour que le bot réponde automatiquement sous vos posts et ouvre une conversation Messenger avec les prospects intéressés."}
+            </p>
           </div>
 
           <div className="space-y-2">
