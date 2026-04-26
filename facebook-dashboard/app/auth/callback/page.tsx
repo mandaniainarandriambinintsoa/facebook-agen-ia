@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 function CallbackHandler() {
   const searchParams = useSearchParams();
@@ -12,6 +13,14 @@ function CallbackHandler() {
 
   useEffect(() => {
     const token = searchParams.get("token");
+    const error = searchParams.get("error");
+
+    if (error) {
+      toast.error(error, { duration: 8000 });
+      router.replace("/");
+      return;
+    }
+
     if (token) {
       login(token);
       router.replace("/dashboard");

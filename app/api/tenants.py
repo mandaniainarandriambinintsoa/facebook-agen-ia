@@ -2,6 +2,8 @@
 Routes OAuth + gestion des tenants
 """
 
+from urllib.parse import quote
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +18,22 @@ from app.auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 tenants_router = APIRouter(prefix="/api/tenants", tags=["Tenants"])
+
+
+def _callback_redirect_or_json(state: str, *, token: str | None = None, error: str | None = None):
+    """
+    Redirige vers le frontend si state est un URL, sinon retourne JSON
+    (utilise pour appels programmatiques type curl ou tests).
+    """
+    if state and state.startswith("http"):
+        sep = "&" if "?" in state else "?"
+        if error:
+            return RedirectResponse(f"{state}{sep}error={quote(error)}")
+        if token:
+            return RedirectResponse(f"{state}{sep}token={token}")
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+    return {"access_token": token, "token_type": "bearer"}
 
 
 # ─── OAuth Facebook ────────────────────────────────────────
@@ -36,6 +54,7 @@ async def facebook_callback(
     """
     Callback OAuth Facebook.
     Echange le code, recupere les pages, cree les tenants, retourne un JWT.
+    En cas d'erreur, redirige vers le frontend avec ?error= si state est un URL.
     """
     try:
         # Echanger le code contre des tokens
@@ -48,7 +67,10 @@ async def facebook_callback(
         pages = await oauth.get_user_pages(user_token)
 
         if not pages:
-            raise HTTPException(status_code=400, detail="Aucune page Facebook trouvee")
+            return _callback_redirect_or_json(
+                state,
+                error="Aucune page Facebook trouvee. Verifie que tu as bien selectionne une page lors de l'autorisation.",
+            )
 
         created_tenants = []
         for page in pages:
@@ -125,7 +147,8 @@ async def facebook_callback(
 
         # Si state contient une URL de redirect frontend
         if state and state.startswith("http"):
-            return RedirectResponse(f"{state}?token={jwt_token}")
+            sep = "&" if "?" in state else "?"
+            return RedirectResponse(f"{state}{sep}token={jwt_token}")
 
         return {
             "access_token": jwt_token,
@@ -137,11 +160,9 @@ async def facebook_callback(
             ],
         }
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"Erreur OAuth callback: {e}")
-        raise HTTPException(status_code=500, detail=f"Erreur OAuth: {str(e)}")
+        return _callback_redirect_or_json(state, error=f"Erreur OAuth: {str(e)}")
 
 
 # ─── Tenants API ───────────────────────────────────────────
