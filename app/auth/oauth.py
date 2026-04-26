@@ -16,7 +16,7 @@ async def get_facebook_auth_url(state: str = "") -> str:
     params = {
         "client_id": settings.facebook_app_id,
         "redirect_uri": settings.facebook_oauth_redirect_uri,
-        "scope": "pages_show_list,pages_messaging,pages_manage_metadata,pages_read_engagement",
+        "scope": "pages_show_list,pages_messaging,pages_manage_metadata,pages_read_engagement,business_management",
         "response_type": "code",
         "state": state,
     }
@@ -103,25 +103,63 @@ async def get_user_pages(user_token: str) -> list[dict]:
         except Exception as e:
             logger.error(f"[OAuth] /me/accounts erreur: {e}")
 
-        # 2. Fallback : granular_scopes (Login for Business)
+        # 2. Fallback : Business Manager (cas Login for Business + page dans BM)
         if not pages:
             try:
-                resp = await client.get(f"{GRAPH_API}/me", params={
+                resp = await client.get(f"{GRAPH_API}/me/businesses", params={
                     "access_token": user_token,
-                    "fields": "id,name,granular_scopes",
+                    "fields": "id,name",
+                    "limit": 50,
                 })
                 logger.info(
-                    f"[OAuth] /me?granular_scopes status={resp.status_code} body={resp.text[:800]}"
+                    f"[OAuth] /me/businesses status={resp.status_code} body={resp.text[:500]}"
                 )
-                granular = resp.json().get("granular_scopes", []) if resp.status_code == 200 else []
-                page_ids: set[str] = set()
-                for entry in granular:
-                    scope = entry.get("scope", "")
-                    if scope.startswith("pages_"):
-                        for tid in entry.get("target_ids", []) or []:
-                            page_ids.add(str(tid))
+                businesses = resp.json().get("data", []) if resp.status_code == 200 else []
 
-                logger.info(f"[OAuth] granular page_ids={list(page_ids)}")
+                for biz in businesses:
+                    biz_id = biz.get("id")
+                    if not biz_id:
+                        continue
+                    # owned_pages
+                    for endpoint in ("owned_pages", "client_pages"):
+                        page_resp = await client.get(f"{GRAPH_API}/{biz_id}/{endpoint}", params={
+                            "access_token": user_token,
+                            "fields": "id,name,access_token,category",
+                            "limit": 100,
+                        })
+                        logger.info(
+                            f"[OAuth] /{biz_id}/{endpoint} status={page_resp.status_code} body={page_resp.text[:500]}"
+                        )
+                        if page_resp.status_code == 200:
+                            for page in page_resp.json().get("data", []):
+                                if page.get("access_token") and page["id"] not in seen_ids:
+                                    pages.append({
+                                        "page_id": page["id"],
+                                        "page_name": page.get("name", ""),
+                                        "page_access_token": page["access_token"],
+                                        "category": page.get("category", ""),
+                                    })
+                                    seen_ids.add(page["id"])
+            except Exception as e:
+                logger.error(f"[OAuth] fallback businesses erreur: {e}")
+
+        # 3. Fallback ultime : granular permissions (BAUPA assets)
+        if not pages:
+            try:
+                resp = await client.get(f"{GRAPH_API}/me/permissions", params={
+                    "access_token": user_token,
+                })
+                logger.info(
+                    f"[OAuth] /me/permissions status={resp.status_code} body={resp.text[:800]}"
+                )
+                page_ids: set[str] = set()
+                if resp.status_code == 200:
+                    for perm in resp.json().get("data", []):
+                        if perm.get("permission", "").startswith("pages_"):
+                            for tid in perm.get("target_ids", []) or []:
+                                page_ids.add(str(tid))
+
+                logger.info(f"[OAuth] permissions page_ids={list(page_ids)}")
 
                 for pid in page_ids:
                     if pid in seen_ids:
@@ -140,12 +178,8 @@ async def get_user_pages(user_token: str) -> list[dict]:
                                 "category": page.get("category", ""),
                             })
                             seen_ids.add(page["id"])
-                    else:
-                        logger.warning(
-                            f"[OAuth] fetch page {pid} status={page_resp.status_code} body={page_resp.text[:300]}"
-                        )
             except Exception as e:
-                logger.error(f"[OAuth] fallback granular_scopes erreur: {e}")
+                logger.error(f"[OAuth] fallback permissions erreur: {e}")
 
     logger.info(f"[OAuth] Pages finales trouvees: {len(pages)} -> {[p['page_name'] for p in pages]}")
     return pages
