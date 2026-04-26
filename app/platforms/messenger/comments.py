@@ -111,14 +111,19 @@ class CommentsHandler:
             logger.error(f"[Comment] Erreur generation RAG: {e}")
             return
 
-        # 3. Reponse publique courte (template FR)
+        # 3. Reponse publique courte (template FR) — BEST EFFORT
+        # Necessite pages_manage_engagement, qui declenche un bug warning Meta
+        # `Invalid Scopes: pages_read_user_content` cote OAuth admin/dev.
+        # En l'absence de cette permission, on skip silencieusement et on
+        # envoie uniquement le DM via private_replies (qui marche avec
+        # pages_messaging seul).
         public_text = random.choice(PUBLIC_REPLY_TEMPLATES_FR)
         try:
             await asyncio.sleep(2)
             await self.reply_to_comment(comment_id, public_text, user_name)
         except Exception as e:
-            logger.error(f"[Comment] Erreur reply public: {e}")
-            # On continue quand meme vers le private_reply
+            logger.warning(f"[Comment] Public reply skipped (likely missing pages_manage_engagement): {e}")
+            # On continue vers le private_reply, c'est l'essentiel
 
         # 4. Private reply (ouvre le DM Messenger)
         try:
