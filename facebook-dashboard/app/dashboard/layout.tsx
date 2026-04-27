@@ -27,6 +27,9 @@ export default function DashboardLayout({
         <Header />
         <main className="flex-1 overflow-auto bg-muted/40 p-6 md:p-8 lg:p-10">
           <div className="mx-auto w-full max-w-5xl">{children}</div>
+          <footer className="mx-auto mt-12 w-full max-w-5xl border-t pt-4 text-center text-xs text-muted-foreground">
+            © 2026 <strong>RANDRIAMBININTSOA MANDANIAINA</strong> — LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar
+          </footer>
         </main>
       </div>
     </div>

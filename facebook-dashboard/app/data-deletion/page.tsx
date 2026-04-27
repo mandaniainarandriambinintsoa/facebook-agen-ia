@@ -16,7 +16,9 @@ export default function DataDeletionPage() {
             <h2 className="text-lg font-semibold">Comment supprimer vos donnees</h2>
             <p>
               Conformement au RGPD et aux politiques de Meta, vous pouvez demander la
-              suppression de toutes vos donnees associees a Facebook Agent IA.
+              suppression de toutes vos donnees associees a Facebook Agent IA, service
+              opere par <strong>RANDRIAMBININTSOA MANDANIAINA</strong>, LOT VT 85 HE BIS DB
+              ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar.
             </p>
           </section>
 
@@ -42,7 +44,7 @@ export default function DataDeletionPage() {
           <section>
             <h2 className="text-lg font-semibold">Option 3 : Par email</h2>
             <p>
-              Envoyez un email a <strong>mandaniaina.randriambinintsoa@gmail.com</strong> avec
+              Envoyez un email a <strong>contact@manda-ia.com</strong> avec
               l&apos;objet &quot;Demande de suppression de donnees&quot; et votre identifiant Facebook.
               Nous traiterons votre demande sous 30 jours.
             </p>

@@ -16,9 +16,11 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold">1. Acceptation des conditions</h2>
             <p>
-              En utilisant Facebook Agent IA (&quot;le Service&quot;), vous acceptez les presentes
-              conditions d&apos;utilisation. Si vous n&apos;acceptez pas ces conditions, veuillez ne pas
-              utiliser le Service.
+              Facebook Agent IA (&quot;le Service&quot;) est opere par{" "}
+              <strong>RANDRIAMBININTSOA MANDANIAINA</strong>, entrepreneur individuel domicilie
+              a LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar.
+              En utilisant le Service, vous acceptez les presentes conditions d&apos;utilisation.
+              Si vous n&apos;acceptez pas ces conditions, veuillez ne pas utiliser le Service.
             </p>
           </section>
 
@@ -107,7 +109,9 @@ export default function TermsPage() {
             <h2 className="text-lg font-semibold">10. Contact</h2>
             <p>
               Pour toute question concernant ces conditions :<br />
-              Email : mandaniaina.randriambinintsoa@gmail.com
+              <strong>RANDRIAMBININTSOA MANDANIAINA</strong><br />
+              LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar<br />
+              Email : contact@manda-ia.com
             </p>
           </section>
         </CardContent>

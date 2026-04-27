@@ -16,9 +16,11 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-semibold">1. Introduction</h2>
             <p>
-              Facebook Agent IA (&quot;le Service&quot;) est une plateforme SaaS permettant aux
-              proprietaires de pages Facebook de configurer un assistant IA pour repondre
-              automatiquement aux messages et commentaires de leurs clients.
+              Facebook Agent IA (&quot;le Service&quot;) est une plateforme SaaS operee par{" "}
+              <strong>RANDRIAMBININTSOA MANDANIAINA</strong>, entrepreneur individuel base a
+              LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar.
+              Le Service permet aux proprietaires de pages Facebook de configurer un assistant
+              IA pour repondre automatiquement aux messages et commentaires de leurs clients.
             </p>
             <p>
               Cette politique de confidentialite explique comment nous collectons, utilisons
@@ -92,7 +94,9 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-semibold">8. Contact</h2>
             <p>
               Pour toute question concernant cette politique de confidentialite :<br />
-              Email : mandaniaina.randriambinintsoa@gmail.com
+              <strong>RANDRIAMBININTSOA MANDANIAINA</strong><br />
+              LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar<br />
+              Email : contact@manda-ia.com
             </p>
           </section>
         </CardContent>

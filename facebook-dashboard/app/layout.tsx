@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Facebook Agent IA - Dashboard",
-  description: "Gérez votre agent IA Facebook",
+  description: "Service opéré par RANDRIAMBININTSOA MANDANIAINA — assistant IA pour pages Facebook.",
 };
 
 export default function RootLayout({
