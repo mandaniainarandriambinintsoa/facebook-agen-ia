@@ -209,7 +209,9 @@ class CommentsHandler:
     async def send_private_reply(self, comment_id: str, message: str):
         """
         Envoie un message Messenger prive a l'auteur du commentaire.
-        Endpoint Meta : POST /{comment-id}/private_replies
+        Endpoint moderne : POST /me/messages avec recipient.comment_id
+        (l'ancien /{comment_id}/private_replies est deprecated et echoue
+        avec code=100 subcode=33 sur certains comments).
         Limites :
           - 7 jours apres la date du commentaire
           - 1 seul private_reply par commentaire
@@ -222,16 +224,16 @@ class CommentsHandler:
         if not message:
             return
 
-        # Le webhook fournit comment_id au format "POST_ID_COMMENT_ID".
-        # /private_replies attend uniquement la partie COMMENT_ID.
-        raw_comment_id = comment_id.split("_")[-1] if "_" in comment_id else comment_id
-
-        url = f"{self.GRAPH_API_URL}/{raw_comment_id}/private_replies"
+        url = f"{self.GRAPH_API_URL}/me/messages"
         params = {"access_token": self.access_token}
-        payload = {"message": message}
+        payload = {
+            "recipient": {"comment_id": comment_id},
+            "message": {"text": message},
+            "messaging_type": "RESPONSE",
+        }
 
         async with httpx.AsyncClient() as client:
-            response = await client.post(url, params=params, data=payload)
+            response = await client.post(url, params=params, json=payload)
             if response.status_code != 200:
                 logger.error(
                     f"[Comment] private_reply erreur {response.status_code}: {response.text}"
