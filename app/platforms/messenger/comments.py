@@ -222,7 +222,11 @@ class CommentsHandler:
         if not message:
             return
 
-        url = f"{self.GRAPH_API_URL}/{comment_id}/private_replies"
+        # Le webhook fournit comment_id au format "POST_ID_COMMENT_ID".
+        # /private_replies attend uniquement la partie COMMENT_ID.
+        raw_comment_id = comment_id.split("_")[-1] if "_" in comment_id else comment_id
+
+        url = f"{self.GRAPH_API_URL}/{raw_comment_id}/private_replies"
         params = {"access_token": self.access_token}
         payload = {"message": message}
 
