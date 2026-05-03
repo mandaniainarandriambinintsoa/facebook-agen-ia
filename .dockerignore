@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+env
+*.egg-info
+dist
+build
+
+# Frontend (build dans son propre Dockerfile)
+facebook-dashboard
+
+# Docs / images / scripts non runtime
+doc
+frames
+image
+*.png
+*.jpg
+*.JPG
+*.JPEG
+*.mp4
+*.srt
+SCREENCAST_SCRIPT.md
+
+# Local
+.env
+.env.local
+.env.*.local
+.vscode
+.idea
+*.log
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests / dev
+tests

@@ -1,0 +1,14 @@
+node_modules
+.next
+.vercel
+.git
+.env
+.env.local
+.env.*.local
+.vscode
+.idea
+*.log
+README.md
+.gitignore
+.eslintcache
+tsconfig.tsbuildinfo
