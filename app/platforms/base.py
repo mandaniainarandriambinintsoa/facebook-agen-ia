@@ -4,9 +4,33 @@ Chaque plateforme (Messenger, Instagram, WhatsApp) implemente les methodes d'env
 Le pipeline RAG est partage dans la classe de base.
 """
 
+import re
 from abc import ABC, abstractmethod
 from typing import List, Dict
 from loguru import logger
+
+
+# Patterns pour detecter une demande explicite d'image dans le message du client
+# (FR + MG). Si match, on autorise l'envoi de l'image meme en confidence
+# medium/low (le client a explicitement demande a voir le produit).
+_IMAGE_REQUEST_PATTERN = re.compile(
+    r"\b("
+    r"photo\w*|image\w*|sary"  # noms FR + MG ("sary" = image en MG)
+    r"|montre|montrer|montrez|montre[ -]moi"  # FR montrer
+    r"|asehoy|asehoanao"  # MG montrer ("asehoy" = montre)
+    r"|voir|regard\w*"  # FR voir/regarder
+    r"|envoi\w*\s+(?:photo|image|sary)"  # FR envoie une photo
+    r"|alefaso\s+sary|andefaso\s+sary"  # MG envoie une image
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def _is_image_requested(message: str) -> bool:
+    """Detecte si le message du client demande explicitement une image/photo."""
+    if not message:
+        return False
+    return bool(_IMAGE_REQUEST_PATTERN.search(message))
 
 
 class PlatformClient(ABC):
@@ -96,12 +120,16 @@ class PlatformClient(ABC):
             conversation_mode = getattr(tenant_config, "conversation_mode", "catalog") if tenant_config else "catalog"
             if conversation_mode == "classic":
                 await self.send_message(sender_id, response)
-                # Image envoyee UNIQUEMENT si confidence=high : le RAG a un match
-                # tres precis avec le produit. On evite ainsi d'envoyer une image
-                # aleatoire sur des queries generiques type "salama tompoko"
-                # (salutation) ou "vous vendez quoi ?" (question catalogue) qui
-                # peuvent matcher en medium/low sur le top produit du moment.
-                if top_image_url and confidence_level == "high":
+                # Logique d'envoi image :
+                # - confidence=high : envoi auto (match RAG tres precis avec le produit)
+                # - client demande explicitement (photo/sary/montre) : envoi meme en
+                #   medium/low car l'intent est explicite, pas besoin d'un match parfait
+                # - sinon : pas d'image (evite les images aleatoires sur "salama tompoko")
+                image_requested = _is_image_requested(message_text)
+                should_send_image = top_image_url and (
+                    confidence_level == "high" or image_requested
+                )
+                if should_send_image:
                     try:
                         await self.send_image(sender_id, top_image_url)
                     except Exception as e:
