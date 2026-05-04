@@ -221,6 +221,14 @@ INSTRUCTIONS SUPPLEMENTAIRES:
         elif provider == "openai" and settings.openai_api_key:
             self.primary_client = OpenAIClient()
 
+        # Fallback automatique vers Groq si primary != groq et clé Groq dispo.
+        # Couvre les cas rate-limit / panne OpenAI sans interruption de service.
+        if provider != "groq" and settings.groq_api_key:
+            try:
+                self.fallback_client = GroqClient()
+            except Exception as e:
+                logger.debug(f"Pas de fallback Groq disponible: {e}")
+
         if self.primary_client:
             logger.debug(f"LLM principal: {provider}")
         if self.fallback_client:
