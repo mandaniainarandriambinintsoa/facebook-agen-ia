@@ -107,9 +107,14 @@ def _resolve_apps(env: str, target: str) -> list[tuple[str, str]]:
 
 
 def trigger_deploy(uuid: str, token: str, force: bool = True) -> tuple[int, dict | str]:
-    """Trigger un deploy via l'API Coolify."""
-    qs = urllib.parse.urlencode({"force": "true" if force else "false"})
-    url = f"{COOLIFY_BASE_URL}/api/v1/applications/{uuid}/deploy?{qs}"
+    """Trigger un deploy via l'API Coolify.
+
+    Endpoint correct pour Coolify v4 : /api/v1/deploy?uuid=...&force=true
+    (PAS /api/v1/applications/{uuid}/deploy qui renvoie 404).
+    """
+    params = {"uuid": uuid, "force": "true" if force else "false"}
+    qs = urllib.parse.urlencode(params)
+    url = f"{COOLIFY_BASE_URL}/api/v1/deploy?{qs}"
     return _http_get(url, token)
 
 
