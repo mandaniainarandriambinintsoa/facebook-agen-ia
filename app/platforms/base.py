@@ -96,10 +96,12 @@ class PlatformClient(ABC):
             conversation_mode = getattr(tenant_config, "conversation_mode", "catalog") if tenant_config else "catalog"
             if conversation_mode == "classic":
                 await self.send_message(sender_id, response)
-                # Si le top document RAG a une image pertinente, on l'envoie apres le texte.
-                # On inclut "low" car en pratique les scores RAG sont dans la fourchette
-                # 0.3-0.5 meme pour du matching correct (embeddings courts vs contenus longs).
-                if top_image_url and confidence_level in ("high", "medium", "low"):
+                # Image envoyee UNIQUEMENT si confidence=high : le RAG a un match
+                # tres precis avec le produit. On evite ainsi d'envoyer une image
+                # aleatoire sur des queries generiques type "salama tompoko"
+                # (salutation) ou "vous vendez quoi ?" (question catalogue) qui
+                # peuvent matcher en medium/low sur le top produit du moment.
+                if top_image_url and confidence_level == "high":
                     try:
                         await self.send_image(sender_id, top_image_url)
                     except Exception as e:
