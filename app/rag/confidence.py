@@ -45,8 +45,8 @@ class ConfidenceHandler:
         self.medium_threshold = settings.rag_confidence_medium
         self.low_threshold = settings.rag_confidence_low
 
-        logger.info(f"Seuils de confiance: high={self.high_threshold}, "
-                   f"medium={self.medium_threshold}, low={self.low_threshold}")
+        logger.debug(f"Seuils de confiance: high={self.high_threshold}, "
+                    f"medium={self.medium_threshold}, low={self.low_threshold}")
 
     def _get_confidence_level(self, score: float) -> ConfidenceLevel:
         """Determine le niveau de confiance a partir du score"""

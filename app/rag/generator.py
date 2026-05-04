@@ -11,6 +11,40 @@ from app.config import settings
 from app.rag.models import RetrievedDocument
 
 
+# Singletons des SDK clients : evitent le cout d'init (HTTPS pool, validation token)
+# a chaque message. Lazy-loaded au premier appel via les factories ci-dessous.
+_groq_sdk = None
+_openai_sdk = None
+_anthropic_sdk = None
+
+
+def _get_groq_sdk():
+    global _groq_sdk
+    if _groq_sdk is None:
+        from groq import Groq
+        _groq_sdk = Groq(api_key=settings.groq_api_key)
+        logger.info("Groq SDK initialise (singleton)")
+    return _groq_sdk
+
+
+def _get_openai_sdk():
+    global _openai_sdk
+    if _openai_sdk is None:
+        from openai import OpenAI
+        _openai_sdk = OpenAI(api_key=settings.openai_api_key)
+        logger.info("OpenAI SDK initialise (singleton)")
+    return _openai_sdk
+
+
+def _get_anthropic_sdk():
+    global _anthropic_sdk
+    if _anthropic_sdk is None:
+        from anthropic import Anthropic
+        _anthropic_sdk = Anthropic(api_key=settings.anthropic_api_key)
+        logger.info("Anthropic SDK initialise (singleton)")
+    return _anthropic_sdk
+
+
 class BaseLLMClient(ABC):
     """Interface de base pour les clients LLM"""
 
@@ -24,13 +58,10 @@ class OpenAIClient(BaseLLMClient):
     """Client pour l'API OpenAI (GPT)"""
 
     def __init__(self):
-        from openai import OpenAI
-        self.client = OpenAI(api_key=settings.openai_api_key)
+        self.client = _get_openai_sdk()
         self.model = settings.llm_model if settings.llm_model else "gpt-4o-mini"
-        logger.info(f"Client OpenAI initialise avec le modele: {self.model}")
 
     def generate(self, prompt: str, system_prompt: str) -> str:
-        """Genere une reponse avec GPT"""
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -51,13 +82,10 @@ class GroqClient(BaseLLMClient):
     """Client pour l'API Groq (Llama, Mixtral, etc.)"""
 
     def __init__(self):
-        from groq import Groq
-        self.client = Groq(api_key=settings.groq_api_key)
+        self.client = _get_groq_sdk()
         self.model = settings.groq_model if settings.groq_model else "llama-3.3-70b-versatile"
-        logger.info(f"Client Groq initialise avec le modele: {self.model}")
 
     def generate(self, prompt: str, system_prompt: str) -> str:
-        """Genere une reponse avec Groq"""
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -78,13 +106,10 @@ class AnthropicClient(BaseLLMClient):
     """Client pour l'API Anthropic (Claude)"""
 
     def __init__(self):
-        from anthropic import Anthropic
-        self.client = Anthropic(api_key=settings.anthropic_api_key)
+        self.client = _get_anthropic_sdk()
         self.model = settings.llm_model
-        logger.info(f"Client Anthropic initialise avec le modele: {self.model}")
 
     def generate(self, prompt: str, system_prompt: str) -> str:
-        """Genere une reponse avec Claude"""
         try:
             message = self.client.messages.create(
                 model=self.model,
@@ -170,9 +195,9 @@ INSTRUCTIONS SUPPLEMENTAIRES:
             self.primary_client = OpenAIClient()
 
         if self.primary_client:
-            logger.info(f"LLM principal: {provider}")
+            logger.debug(f"LLM principal: {provider}")
         if self.fallback_client:
-            logger.info(f"LLM fallback configure")
+            logger.debug(f"LLM fallback configure")
         if not self.primary_client and not self.fallback_client:
             logger.warning("Aucun client LLM configure! Verifiez vos cles API dans .env")
 

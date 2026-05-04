@@ -17,13 +17,13 @@ class EmbeddingService:
     def __init__(self, model_name: str | None = None):
         self.model_name = model_name or settings.embedding_model
         self._model = None
-        logger.info(f"Service d'embeddings initialise avec le modele: {self.model_name}")
+        logger.debug(f"Service d'embeddings initialise avec le modele: {self.model_name}")
 
     @property
     def model(self) -> TextEmbedding:
         """Charge le modele de maniere lazy"""
         if self._model is None:
-            logger.info(f"Chargement du modele d'embeddings: {self.model_name}")
+            logger.info(f"Chargement initial du modele d'embeddings: {self.model_name}")
             self._model = TextEmbedding(model_name=self.model_name)
             logger.info("Modele d'embeddings charge avec succes")
         return self._model
