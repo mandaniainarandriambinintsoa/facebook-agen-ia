@@ -40,9 +40,12 @@ class Settings(BaseSettings):
     facebook_oauth_redirect_uri: str = Field(default="", description="OAuth callback URL")
 
     # Embedding Configuration
+    # multilingual-e5-small : 384 dims (compatible Vector(384) DB), supporte
+    # 100+ langues dont francais et malgache nativement. Necessite prefixes
+    # "query: " / "passage: " geres automatiquement par EmbeddingService.
     embedding_model: str = Field(
-        default="BAAI/bge-small-en-v1.5",
-        description="FastEmbed model for embeddings (ONNX, no PyTorch)"
+        default="intfloat/multilingual-e5-small",
+        description="FastEmbed model for embeddings (ONNX, no PyTorch). Doit etre 384 dims."
     )
 
     # RAG Configuration

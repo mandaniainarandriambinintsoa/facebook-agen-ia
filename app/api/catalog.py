@@ -60,22 +60,128 @@ def _detect_columns(headers: list[str]) -> dict[str, int]:
 
 
 def _product_to_text(product_data: dict) -> str:
-    """Convertit un produit en texte pour l'embedding"""
+    """Convertit un produit en texte enrichi pour l'embedding.
+
+    Strategie pour maximiser le retrieval :
+    1. Section structuree (champs cles) — capture les recherches precises
+    2. Phrase naturelle resumee (FR + MG) — capture les questions conversationnelles
+       en francais et malgache, langues principales des clients Mada.
+    3. Synonymes implicites via mots-cles ajoutes (ex: "disponible/dispo/mbola misy")
+    """
+    name = (product_data.get("name") or "").strip()
+    category = (product_data.get("category") or "").strip()
+    description = (product_data.get("description") or "").strip()
+    price = (product_data.get("price") or "").strip()
+    sizes = (product_data.get("sizes") or "").strip()
+    colors = (product_data.get("colors") or "").strip()
+    stock = (product_data.get("stock_status") or "").strip()
+
     parts = []
-    if product_data.get("name"):
-        parts.append(f"Produit: {product_data['name']}")
-    if product_data.get("category"):
-        parts.append(f"Categorie: {product_data['category']}")
-    if product_data.get("description"):
-        parts.append(f"Description: {product_data['description']}")
-    if product_data.get("price"):
-        parts.append(f"Prix: {product_data['price']}")
-    if product_data.get("sizes"):
-        parts.append(f"Tailles: {product_data['sizes']}")
-    if product_data.get("colors"):
-        parts.append(f"Couleurs: {product_data['colors']}")
-    if product_data.get("stock_status"):
-        parts.append(f"Disponibilite: {product_data['stock_status']}")
+
+    # --- Section structuree (matching precis sur champs) ---
+    if name:
+        parts.append(f"Produit: {name}")
+    if category:
+        parts.append(f"Categorie: {category}")
+    if description:
+        parts.append(f"Description: {description}")
+    if price:
+        parts.append(f"Prix: {price}")
+    if sizes:
+        parts.append(f"Tailles disponibles: {sizes}")
+    if colors:
+        parts.append(f"Couleurs disponibles: {colors}")
+    if stock:
+        parts.append(f"Disponibilite: {stock}")
+
+    # --- Phrase naturelle FR + MG (matching conversationnel) ---
+    # Genere une phrase fluide qui matche les questions clients typiques
+    # ("c'est combien la X ?", "manana X ve ?", "y a t-il des X ?")
+    natural_fr_parts = []
+    natural_mg_parts = []
+
+    if name:
+        # FR
+        natural_fr_parts.append(f"Nous vendons {name}")
+        if category:
+            natural_fr_parts.append(f"dans la categorie {category}")
+        if price:
+            natural_fr_parts.append(f"au prix de {price}")
+        if stock:
+            stock_lower = stock.lower()
+            if "dispo" in stock_lower or "stock" in stock_lower:
+                natural_fr_parts.append("c'est disponible")
+            elif "rupture" in stock_lower:
+                natural_fr_parts.append("actuellement en rupture de stock")
+
+        # MG (malgache)
+        natural_mg_parts.append(f"Manana {name} izahay")
+        if price:
+            natural_mg_parts.append(f"mitentina {price}")
+        if stock:
+            stock_lower = stock.lower()
+            if "dispo" in stock_lower or "stock" in stock_lower:
+                natural_mg_parts.append("mbola misy")
+            elif "rupture" in stock_lower:
+                natural_mg_parts.append("tsy misy intsony amin'izao fotoana izao")
+
+    if natural_fr_parts:
+        parts.append(". ".join(natural_fr_parts) + ".")
+    if natural_mg_parts:
+        parts.append(". ".join(natural_mg_parts) + ".")
+
+    # --- Tags / mots-cles supplementaires ---
+    keywords = []
+    if name:
+        keywords.append(name.lower())
+    if category:
+        keywords.append(category.lower())
+    if colors:
+        # Chaque couleur indexee individuellement pour matcher "casquette noir"
+        for c in colors.split(","):
+            c = c.strip().lower()
+            if c:
+                keywords.append(c)
+    if keywords:
+        parts.append(f"Mots-cles: {', '.join(keywords)}")
+
+    return "\n".join(parts)
+
+
+def _catalog_summary_text(products_data: list[dict]) -> str:
+    """Genere un document 'resume catalogue' indexe en plus des produits.
+
+    Permet aux questions du type 'C'est quoi votre catalogue ?' / 'Inona ny vidiana ?'
+    / 'Vous vendez quoi ?' de matcher avec un score eleve, sinon ces queries
+    generales tombent toutes en confidence=none car aucun produit individuel
+    ne contient ces mots.
+    """
+    names = [p.get("name", "").strip() for p in products_data if p.get("name")]
+    categories = sorted({(p.get("category") or "").strip() for p in products_data if p.get("category")})
+
+    parts = []
+    parts.append("Voici le catalogue complet de notre boutique.")
+
+    if categories:
+        parts.append(f"Nous vendons dans ces categories: {', '.join(categories)}.")
+        parts.append(f"Mivarotra eo amin'ireto sokajy ireto izahay: {', '.join(categories)}.")
+
+    if names:
+        listing_fr = ", ".join(names)
+        parts.append(f"La liste de tous nos produits: {listing_fr}.")
+        parts.append(f"Ireto avy ny vokatra rehetra azonao vidiana: {listing_fr}.")
+
+    parts.append(
+        "Les clients peuvent poser des questions sur le catalogue, les produits, "
+        "les prix, la disponibilite, les couleurs, les tailles, les categories, "
+        "ou demander la liste de ce que nous vendons."
+    )
+    parts.append(
+        "Ny mpanjifa dia afaka manontany momba ny vokatra, ny vidiny, "
+        "ny mbola misy, ny loko, ny habe, ny sokajy, na manontany ny lisitry "
+        "ny vokatra amidinay."
+    )
+
     return "\n".join(parts)
 
 
@@ -119,7 +225,7 @@ async def upload_catalog(
     # Inserer les nouveaux produits
     await crud.create_products(db, tenant.id, products_data)
 
-    # Generer les embeddings
+    # Generer les embeddings : 1 doc par produit + 1 doc "resume catalogue"
     texts = [_product_to_text(p) for p in products_data]
     metadatas = [
         {
@@ -129,6 +235,11 @@ async def upload_catalog(
         }
         for p in products_data
     ]
+
+    # Ajout du document resume catalogue (matche les queries generiques type
+    # "c'est quoi votre catalogue ?" qui ne matchent aucun produit individuel)
+    texts.append(_catalog_summary_text(products_data))
+    metadatas.append({"source": "catalog_summary", "product_name": "", "image_url": ""})
 
     retriever = PgVectorRetriever(tenant_id=tenant.id, db=db)
     await retriever.add_documents(texts, metadatas)
@@ -238,11 +349,14 @@ async def reindex_products(
     if not products:
         return {"status": "no_products", "embeddings_count": 0}
 
-    texts = [_product_to_text({
+    products_dicts = [{
         "name": p.name, "description": p.description, "price": p.price,
         "category": p.category, "sizes": p.sizes, "colors": p.colors,
         "stock_status": p.stock_status,
-    }) for p in products]
+        "image_url": p.image_url,
+    } for p in products]
+
+    texts = [_product_to_text(pd) for pd in products_dicts]
     metadatas = [
         {
             "source": "catalog",
@@ -251,6 +365,10 @@ async def reindex_products(
         }
         for p in products
     ]
+
+    # Document resume catalogue
+    texts.append(_catalog_summary_text(products_dicts))
+    metadatas.append({"source": "catalog_summary", "product_name": "", "image_url": ""})
 
     retriever = PgVectorRetriever(tenant_id=tenant.id, db=db)
     await retriever.add_documents(texts, metadatas)

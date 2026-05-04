@@ -1,6 +1,10 @@
 """
 Service d'embeddings pour la vectorisation des documents et requetes
-Utilise fastembed (ONNX) pour des embeddings locaux legers sans PyTorch
+Utilise fastembed (ONNX) pour des embeddings locaux legers sans PyTorch.
+
+Support des modeles E5 multilingues (intfloat/multilingual-e5-*) qui exigent
+des prefixes "query: " et "passage: " pour optimiser le retrieval. Detection
+automatique du type de modele via model_name.
 """
 
 from fastembed import TextEmbedding
@@ -11,13 +15,22 @@ import numpy as np
 from app.config import settings
 
 
+def _is_e5_model(model_name: str) -> bool:
+    """Detecte si le modele est de la famille E5 (intfloat/multilingual-e5-*)."""
+    return "e5" in model_name.lower()
+
+
 class EmbeddingService:
     """Service de generation d'embeddings avec fastembed (ONNX)"""
 
     def __init__(self, model_name: str | None = None):
         self.model_name = model_name or settings.embedding_model
         self._model = None
-        logger.debug(f"Service d'embeddings initialise avec le modele: {self.model_name}")
+        self._is_e5 = _is_e5_model(self.model_name)
+        logger.debug(
+            f"Service d'embeddings initialise avec le modele: {self.model_name} "
+            f"(E5 prefixes: {self._is_e5})"
+        )
 
     @property
     def model(self) -> TextEmbedding:
@@ -28,15 +41,31 @@ class EmbeddingService:
             logger.info("Modele d'embeddings charge avec succes")
         return self._model
 
+    def _prepare_query(self, text: str) -> str:
+        """Applique le prefixe 'query: ' si modele E5, sinon retourne le texte brut."""
+        if self._is_e5:
+            return f"query: {text}"
+        return text
+
+    def _prepare_passage(self, text: str) -> str:
+        """Applique le prefixe 'passage: ' si modele E5, sinon retourne le texte brut."""
+        if self._is_e5:
+            return f"passage: {text}"
+        return text
+
     def embed_text(self, text: str) -> List[float]:
-        embeddings = list(self.model.embed([text]))
+        """Embed une query (recherche). Applique le prefixe 'query: ' si E5."""
+        prepared = self._prepare_query(text)
+        embeddings = list(self.model.embed([prepared]))
         return embeddings[0].tolist()
 
     def embed_texts(self, texts: List[str]) -> List[List[float]]:
+        """Embed des passages (documents a indexer). Applique 'passage: ' si E5."""
         if not texts:
             return []
         logger.debug(f"Generation d'embeddings pour {len(texts)} textes")
-        embeddings = list(self.model.embed(texts))
+        prepared = [self._prepare_passage(t) for t in texts]
+        embeddings = list(self.model.embed(prepared))
         return [e.tolist() for e in embeddings]
 
     def compute_similarity(self, embedding1: List[float], embedding2: List[float]) -> float:
@@ -51,7 +80,8 @@ class EmbeddingService:
 
     @property
     def embedding_dimension(self) -> int:
-        return 384  # BAAI/bge-small-en-v1.5 et all-MiniLM-L6-v2 = 384 dims
+        # bge-small-en-v1.5, all-MiniLM-L6-v2, multilingual-e5-small = 384 dims
+        return 384
 
 
 # Instance globale du service d'embeddings
