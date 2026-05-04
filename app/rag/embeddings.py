@@ -37,7 +37,20 @@ class EmbeddingService:
         """Charge le modele de maniere lazy"""
         if self._model is None:
             logger.info(f"Chargement initial du modele d'embeddings: {self.model_name}")
-            self._model = TextEmbedding(model_name=self.model_name)
+            try:
+                self._model = TextEmbedding(model_name=self.model_name)
+            except ValueError as e:
+                # Fastembed ne supporte pas le modele demande. Loguer la liste des
+                # modeles supportes pour diagnostic rapide cote ops.
+                try:
+                    supported = [m["model"] for m in TextEmbedding.list_supported_models()]
+                except Exception:
+                    supported = ["(impossible de lister les modeles supportes)"]
+                logger.error(
+                    f"Modele '{self.model_name}' non supporte par fastembed. "
+                    f"Modeles disponibles dans cette version: {supported}"
+                )
+                raise
             logger.info("Modele d'embeddings charge avec succes")
         return self._model
 

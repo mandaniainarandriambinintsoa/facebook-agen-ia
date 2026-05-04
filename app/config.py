@@ -40,11 +40,11 @@ class Settings(BaseSettings):
     facebook_oauth_redirect_uri: str = Field(default="", description="OAuth callback URL")
 
     # Embedding Configuration
-    # multilingual-e5-small : 384 dims (compatible Vector(384) DB), supporte
-    # 100+ langues dont francais et malgache nativement. Necessite prefixes
-    # "query: " / "passage: " geres automatiquement par EmbeddingService.
+    # paraphrase-multilingual-MiniLM-L12-v2 : 384 dims (compatible Vector(384) DB),
+    # multilingue (50+ langues dont francais et malgache via XLM-RoBERTa base),
+    # support stable dans fastembed 0.4+. Pas de prefixe requis (contrairement a E5).
     embedding_model: str = Field(
-        default="intfloat/multilingual-e5-small",
+        default="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         description="FastEmbed model for embeddings (ONNX, no PyTorch). Doit etre 384 dims."
     )
 
