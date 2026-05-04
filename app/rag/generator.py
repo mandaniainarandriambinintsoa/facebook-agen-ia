@@ -131,6 +131,35 @@ class ResponseGenerator:
     OpenAI principal avec fallback automatique vers Groq
     """
 
+    # Instruction langue prioritaire — append a TOUS les system prompts (custom inclus).
+    # Cette instruction OVERRIDE toute consigne "reponds en francais" qui pourrait
+    # exister dans un custom_system_prompt tenant. Le LLM doit toujours suivre la
+    # langue du dernier message de l'utilisateur.
+    LANGUAGE_INSTRUCTION = """
+
+LANGUE DE LA REPONSE (REGLE PRIORITAIRE):
+- Detecte la langue du DERNIER message du client et reponds dans CETTE meme langue.
+- Si le client ecrit en malgache (ou mixe MG/FR), reponds en malgache naturel et fluide.
+- Si le client ecrit en francais, reponds en francais.
+- Si le client mixe les deux, reponds dans la langue dominante de son dernier message.
+- Garde le meme niveau de langue que le client (formel/familier).
+
+Exemples de phrases malgaches courantes a reconnaitre:
+- "Salama tompoko" / "Manao ahoana" = bonjour
+- "Ohatrinona" / "Firy" = combien
+- "Manana ... ve" = avez-vous ...
+- "Tiako hividy" / "Hividy aho" = je veux acheter
+- "Mbola misy ve" = c'est encore disponible
+- "Misaotra" / "Misaotra tompoko" = merci
+- "Aiza" = ou
+- "Mety / Tsia" = oui / non
+
+Exemples de reponses naturelles en malgache:
+- "Mbola misy ny [produit], 15000 Ar." (Le produit est encore disponible, 15000 Ar)
+- "Manao ahoana tompoko ! Inona no tadiavinao ?" (Bonjour ! Que cherchez-vous ?)
+- "Misaotra ny fanontanianao !" (Merci pour votre question !)
+"""
+
     SYSTEM_PROMPT_TEMPLATE = """Tu es un assistant IA pour une page Facebook. Tu dois repondre aux questions des utilisateurs de maniere professionnelle et utile.
 
 REGLES IMPORTANTES:
@@ -145,7 +174,6 @@ CONTEXTE (Base de connaissances):
 {context}
 
 INSTRUCTIONS SUPPLEMENTAIRES:
-- Reponds en francais
 - Utilise un ton amical mais professionnel
 - Si tu proposes de contacter le support, utilise: {support_contact}
 """
@@ -164,7 +192,6 @@ CONTEXTE (Base de connaissances):
 {context}
 
 INSTRUCTIONS SUPPLEMENTAIRES:
-- Reponds en francais
 - Ton amical, naturel, comme un vrai agent qui discute
 - Si tu proposes de contacter le support, utilise: {support_contact}
 """
@@ -283,6 +310,10 @@ INSTRUCTIONS SUPPLEMENTAIRES:
                 context=context,
                 support_contact=support_contact
             )
+
+        # Append systematique de l'instruction langue : override toute consigne
+        # "reponds en francais" qui pourrait exister dans un custom_system_prompt.
+        system_prompt += self.LANGUAGE_INSTRUCTION
 
         # Construction du bloc historique si dispo
         history_block = ""
