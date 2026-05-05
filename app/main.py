@@ -109,6 +109,9 @@ app.include_router(prospects_router)
 from app.api.orders import router as orders_router
 app.include_router(orders_router)
 
+from app.api.test_bot import router as test_bot_router
+app.include_router(test_bot_router)
+
 
 # ─── Health endpoints ─────────────────────────────────────
 
