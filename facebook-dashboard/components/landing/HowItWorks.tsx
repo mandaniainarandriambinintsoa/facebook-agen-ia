@@ -5,7 +5,7 @@ const STEPS = [
     n: "1",
     icon: Facebook,
     title: "Connecte ta page Facebook",
-    desc: "Login en 1 clic via Facebook OAuth. Pas de code, pas de configuration technique. On synchronise ta page, Instagram et WhatsApp Business automatiquement.",
+    desc: "Login en 1 clic via Facebook OAuth. Pas de code, pas de configuration technique. On récupère ta page et on configure les webhooks Messenger automatiquement.",
   },
   {
     n: "2",

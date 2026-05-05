@@ -1,8 +1,6 @@
 export function TrustLogos() {
   const platforms = [
     "Messenger",
-    "WhatsApp Business",
-    "Instagram",
     "Mvola",
     "Orange Money",
     "Airtel Money",

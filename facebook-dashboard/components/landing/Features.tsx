@@ -13,8 +13,8 @@ import {
 const FEATURES = [
   {
     icon: Clock,
-    title: "Réponses 24/7",
-    desc: "Messenger, WhatsApp Business, Instagram DMs. Tes clients sont servis nuit et jour.",
+    title: "Réponses 24/7 sur Messenger",
+    desc: "Tes clients sont servis nuit et jour, sans temps d'attente, sans compte humain à payer.",
   },
   {
     icon: ShoppingBag,

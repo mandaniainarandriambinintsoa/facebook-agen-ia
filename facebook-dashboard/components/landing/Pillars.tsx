@@ -10,7 +10,7 @@ const PILLARS = [
   {
     icon: ShoppingCart,
     title: "Convertit en commandes",
-    desc: "Valina-Bot détecte les intentions d'achat, demande l'adresse, valide le paiement Mvola, Orange Money, Airtel Money ou CB, et crée la commande dans ton dashboard.",
+    desc: "Valina-Bot détecte les intentions d'achat, demande l'adresse, valide le paiement Mvola, Orange Money ou Airtel Money, et crée la commande dans ton dashboard.",
     color: "from-amber-500 to-amber-600",
   },
   {

@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Valina-Bot - L'agent IA pour pages FB, Instagram et WhatsApp",
+  title: "Valina-Bot - L'agent IA pour ta page Messenger Facebook",
   description:
-    "Réponds aux messages clients 24/7, convertis en commandes Mvola, Orange Money, CB. Setup en 10 min, 7 jours d'essai gratuit. Pour commerçants malgaches et francophones.",
+    "Réponds aux messages clients 24/7 sur Messenger, convertis en commandes Mvola, Orange Money, Airtel Money. Setup en 10 min, 7 jours d'essai gratuit. Pour commerçants malgaches et francophones.",
   openGraph: {
-    title: "Valina-Bot - L'agent IA qui répond à tes clients 24/7",
+    title: "Valina-Bot - L'agent IA qui répond à tes clients sur Messenger 24/7",
     description:
-      "Transforme tes pages Facebook, Instagram et WhatsApp en machine à vente automatique. Setup en 10 min, essai gratuit 7 jours.",
+      "Transforme ta page Facebook Messenger en machine à vente automatique. Setup en 10 min, essai gratuit 7 jours.",
     locale: "fr_FR",
     type: "website",
   },

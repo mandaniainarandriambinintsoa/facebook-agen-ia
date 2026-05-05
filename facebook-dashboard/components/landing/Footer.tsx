@@ -41,8 +41,8 @@ export function LandingFooter() {
               <span>Valina-Bot</span>
             </Link>
             <p className="mt-4 text-sm text-slate-600 max-w-xs">
-              L&apos;agent IA qui répond à tes clients sur Facebook, Instagram
-              et WhatsApp 24/7.
+              L&apos;agent IA qui répond à tes clients sur Messenger Facebook
+              24/7. Pour les commerçants malgaches et francophones.
             </p>
           </div>
 

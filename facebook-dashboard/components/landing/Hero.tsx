@@ -30,9 +30,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-xl">
-            Valina-Bot répond, vend et collecte les commandes 24/7 sur tes pages
-            Facebook, Instagram et WhatsApp. L&apos;agent IA qui transforme ta
-            messagerie en machine à vente automatique.
+            Valina-Bot répond, vend et collecte les commandes 24/7 sur ta page
+            Messenger Facebook. L&apos;agent IA qui transforme ta messagerie en
+            machine à vente automatique.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3">

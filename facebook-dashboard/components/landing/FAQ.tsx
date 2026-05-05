@@ -17,8 +17,8 @@ const QUESTIONS = [
     a: "Il escalade automatiquement vers toi avec une notification Telegram. Tu reprends la main sur la conversation depuis le dashboard ou tu enrichis ta base de connaissances pour la prochaine fois.",
   },
   {
-    q: "Compatible avec WhatsApp Business officiel ?",
-    a: "Oui, intégration via Meta Cloud API officielle. Tu connectes ton numéro WhatsApp Business depuis le dashboard en quelques clics.",
+    q: "Et Instagram, WhatsApp ?",
+    a: "Pour le moment, Valina-Bot fonctionne uniquement sur Messenger Facebook (pages business). L'intégration Instagram DMs et WhatsApp Business arrive sur la roadmap. Si tu veux être prévenu, dis-le-moi via contact@manda-ia.com.",
   },
   {
     q: "Puis-je personnaliser le ton du bot ?",
