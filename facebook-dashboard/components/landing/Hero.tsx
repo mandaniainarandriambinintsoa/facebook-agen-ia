@@ -2,11 +2,20 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ChatMockup } from "./ChatMockup";
 import { DashedLine } from "./DashedLine";
-import { IllustrationFrame } from "./IllustrationFrame";
 
 export function Hero() {
   return (
     <section className="relative pt-28 pb-12 md:pt-36 md:pb-20 overflow-hidden bg-[#FAF9F5]">
+      {/* Background atmosphere */}
+      <div
+        aria-hidden
+        className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-[#F4B83A]/10 blur-3xl pointer-events-none"
+      />
+      <div
+        aria-hidden
+        className="absolute top-32 -right-40 w-[450px] h-[450px] rounded-full bg-[#B7481E]/8 blur-3xl pointer-events-none"
+      />
+
       <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
         <div className="grid md:grid-cols-12 gap-6 md:gap-10 items-end">
           {/* Left : editorial headline */}
@@ -64,7 +73,7 @@ export function Hero() {
         {/* Dashed line connecting headline to mockup (desktop only) */}
         <DashedLine
           variant="hero-cta"
-          className="absolute hidden md:block top-[40%] left-[58%] w-[20%] h-[35%] -z-0"
+          className="absolute hidden md:block top-[42%] left-[55%] w-[18%] h-[28%] -z-0 opacity-40"
           color="#0F0E0C"
         />
       </div>
@@ -90,21 +99,6 @@ export function Hero() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Illustration tease - bottom right */}
-      <div
-        aria-hidden
-        className="hidden lg:block absolute bottom-0 -right-20 w-72 opacity-90 pointer-events-none"
-        style={{ animation: "float-soft 6s ease-in-out infinite" }}
-      >
-        <IllustrationFrame
-          src="/illustrations/merchant-tired.jpg"
-          alt="Commerçante mada dépassée par les notifications"
-          width={400}
-          height={400}
-          className="drop-shadow-2xl"
-        />
       </div>
     </section>
   );

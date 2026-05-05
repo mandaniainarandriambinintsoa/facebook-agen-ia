@@ -1,5 +1,4 @@
 import { StepBadge, NumberCircle } from "./StepBadge";
-import { DashedLine } from "./DashedLine";
 import { IllustrationFrame } from "./IllustrationFrame";
 import { EditorialBubble } from "./EditorialBubble";
 
@@ -76,15 +75,6 @@ export function Pillars() {
                 key={pillar.n}
                 className="relative grid md:grid-cols-12 gap-8 md:gap-16 items-center"
               >
-                {/* Decorative dashed line - desktop only */}
-                <DashedLine
-                  variant="pillar-curve"
-                  className={`absolute hidden md:block top-1/4 ${
-                    isRight ? "left-1/3 -scale-x-100" : "right-1/3"
-                  } w-[30%] h-[60%] -z-0 opacity-60`}
-                  color="#0F0E0C"
-                />
-
                 {/* Text */}
                 <div
                   className={`md:col-span-6 relative z-10 ${
