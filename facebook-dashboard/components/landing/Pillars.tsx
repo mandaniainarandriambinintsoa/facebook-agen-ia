@@ -11,7 +11,7 @@ const PILLARS = [
     title: "Aucune vente perdue parce que tu dormais",
     desc: "Ton client envoie un message à 23h. À 23h une seconde plus tard, il a sa réponse. Pas de message ignoré, pas de client qui s'en va chez le voisin pendant que tu dors.",
     illustration: {
-      src: "/illustrations/customer-night.png",
+      src: "/illustrations/customer-night.jpg",
       alt: "Cliente qui chatte avec le bot Valina la nuit",
     },
     quote: { text: "Mbola misy ve taille M ?", time: "23:42" },
@@ -24,7 +24,7 @@ const PILLARS = [
     title: "Prend la commande Mvola, Orange ou Airtel automatiquement",
     desc: "Quand un client veut acheter, le bot capte son adresse, son numéro, valide le paiement, et crée la commande dans ton dashboard. Tu n'as qu'à préparer le colis.",
     illustration: {
-      src: "/illustrations/delivery-mvola.png",
+      src: "/illustrations/delivery-mvola.jpg",
       alt: "Livreur Tana qui livre une commande validée Mvola",
     },
     quote: { text: "Adresse : Lot 42 Andoharanofotsy. Mvola validé ✓", time: "16:55" },
@@ -37,7 +37,7 @@ const PILLARS = [
     title: "Comprend ton catalogue Excel sans que tu n'expliques",
     desc: "Tu uploades ton fichier produits une seule fois. Le bot apprend les noms, prix, tailles, photos. Tu modifies ton Excel, il se met à jour automatiquement.",
     illustration: {
-      src: "/illustrations/merchant-tired.png",
+      src: "/illustrations/merchant-tired.jpg",
       alt: "Catalogue qui se transforme en cerveau du bot",
     },
     quote: { text: "Robe rouge dispo M, L et XL. 80 000 Ar.", time: "now" },

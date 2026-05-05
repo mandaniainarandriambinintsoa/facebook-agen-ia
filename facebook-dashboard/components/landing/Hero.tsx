@@ -99,7 +99,7 @@ export function Hero() {
         style={{ animation: "float-soft 6s ease-in-out infinite" }}
       >
         <IllustrationFrame
-          src="/illustrations/merchant-tired.png"
+          src="/illustrations/merchant-tired.jpg"
           alt="Commerçante mada dépassée par les notifications"
           width={400}
           height={400}
