@@ -12,6 +12,7 @@ import {
   Flame,
   ShoppingCart,
   Plug,
+  Wand2,
 } from "lucide-react";
 
 const links = [
@@ -23,6 +24,7 @@ const links = [
   { href: "/dashboard/knowledge", label: "Connaissances", icon: Brain },
   { href: "/dashboard/platforms", label: "Plateformes", icon: Plug },
   { href: "/dashboard/config", label: "Configuration", icon: Settings },
+  { href: "/onboarding", label: "Refaire la configuration", icon: Wand2 },
 ];
 
 export function Sidebar() {

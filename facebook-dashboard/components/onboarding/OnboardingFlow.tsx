@@ -26,8 +26,14 @@ export function OnboardingFlow() {
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authenticated) {
-      router.replace("/login");
+    if (authenticated === false) {
+      // Petit delai pour laisser le contexte hydrater le token depuis localStorage
+      const timer = setTimeout(() => {
+        if (!localStorage.getItem("token")) {
+          router.replace("/login?redirect=/onboarding");
+        }
+      }, 200);
+      return () => clearTimeout(timer);
     }
   }, [authenticated, router]);
 

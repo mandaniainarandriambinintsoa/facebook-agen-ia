@@ -1,103 +1,137 @@
+import { StepBadge, NumberCircle } from "./StepBadge";
+import { DashedLine } from "./DashedLine";
+import { IllustrationFrame } from "./IllustrationFrame";
+import { EditorialBubble } from "./EditorialBubble";
+
 const PILLARS = [
   {
-    n: "01",
-    kicker: "Toujours là",
+    n: 1,
+    color: "terracotta" as const,
+    badge: "Acquisition",
     title: "Aucune vente perdue parce que tu dormais",
-    desc: "Le bot répond en 5 secondes, que ce soit à 8h, à 23h ou pendant ton week-end. Tes clients ne s'en vont pas parce que personne n'a vu leur question.",
-    accent: "#B7481E",
-    big: true,
+    desc: "Ton client envoie un message à 23h. À 23h une seconde plus tard, il a sa réponse. Pas de message ignoré, pas de client qui s'en va chez le voisin pendant que tu dors.",
+    illustration: {
+      src: "/illustrations/customer-night.png",
+      alt: "Cliente qui chatte avec le bot Valina la nuit",
+    },
+    quote: { text: "Mbola misy ve taille M ?", time: "23:42" },
+    align: "right" as const,
   },
   {
-    n: "02",
-    kicker: "Ferme la vente",
+    n: 2,
+    color: "forest" as const,
+    badge: "Conversion",
     title: "Prend la commande Mvola, Orange ou Airtel automatiquement",
-    desc: "Quand un client veut acheter, le bot capte l'adresse, le téléphone, valide le paiement, et crée la commande dans ton dashboard.",
-    accent: "#2D4A3E",
-    big: false,
+    desc: "Quand un client veut acheter, le bot capte son adresse, son numéro, valide le paiement, et crée la commande dans ton dashboard. Tu n'as qu'à préparer le colis.",
+    illustration: {
+      src: "/illustrations/delivery-mvola.png",
+      alt: "Livreur Tana qui livre une commande validée Mvola",
+    },
+    quote: { text: "Adresse : Lot 42 Andoharanofotsy. Mvola validé ✓", time: "16:55" },
+    align: "left" as const,
   },
   {
-    n: "03",
-    kicker: "Apprend ton métier",
-    title: "Comprend ton catalogue Excel sans formation",
-    desc: "Tu uploades ton fichier produits une seule fois. Le bot apprend les noms, prix, tailles, photos. Tu modifies, il met à jour.",
-    accent: "#F4B83A",
-    big: false,
+    n: 3,
+    color: "sun" as const,
+    badge: "Apprentissage",
+    title: "Comprend ton catalogue Excel sans que tu n'expliques",
+    desc: "Tu uploades ton fichier produits une seule fois. Le bot apprend les noms, prix, tailles, photos. Tu modifies ton Excel, il se met à jour automatiquement.",
+    illustration: {
+      src: "/illustrations/merchant-tired.png",
+      alt: "Catalogue qui se transforme en cerveau du bot",
+    },
+    quote: { text: "Robe rouge dispo M, L et XL. 80 000 Ar.", time: "now" },
+    align: "right" as const,
   },
 ];
 
 export function Pillars() {
   return (
-    <section id="story" className="py-20 md:py-32 bg-[#F5E9D9] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 relative z-10">
+    <section id="story" className="py-24 md:py-36 bg-[#FAF9F5]">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8">
         {/* Section header */}
-        <div className="max-w-3xl mb-16 md:mb-24">
-          <span className="font-mono text-xs text-[#B7481E] uppercase tracking-widest mb-4 block">
-            Le constat
-          </span>
-          <h2 className="font-display text-4xl md:text-6xl text-[#1A1614] tracking-tight leading-[1.05]">
+        <div className="text-center max-w-3xl mx-auto mb-20 md:mb-32">
+          <div className="mb-6">
+            <StepBadge>Le constat</StepBadge>
+          </div>
+          <h2 className="font-display text-4xl md:text-6xl text-[#0F0E0C] tracking-[-0.02em] leading-[1.0]">
             Tes clients posent les{" "}
-            <span className="italic text-[#B7481E]">mêmes</span> questions,
+            <em className="not-italic font-display italic text-[#B7481E]">mêmes</em> questions,
             <br />
-            tu réponds <span className="italic">100 fois</span> par jour,
+            tu réponds <em className="not-italic font-display italic">100 fois</em> par jour,
             <br />
-            et le soir tu dors mal.
+            et le soir tu dors mal<span className="text-[#B7481E]">.</span>
           </h2>
-          <p className="mt-6 text-lg text-[#1A1614]/70 max-w-xl leading-relaxed">
+          <p className="mt-8 text-lg text-[#0F0E0C]/70 max-w-xl mx-auto leading-relaxed">
             Trois choses que Valina-Bot fait à ta place, dès le premier jour.
           </p>
         </div>
 
-        {/* Asymmetric grid */}
-        <div className="grid md:grid-cols-12 gap-6 md:gap-8">
-          {/* Big card - col-span-7 */}
-          <article className="md:col-span-7 relative bg-[#1A1614] text-[#FBF6EE] rounded-2xl p-8 md:p-12 overflow-hidden group">
-            <div
-              aria-hidden
-              className="absolute -right-20 -top-20 w-72 h-72 rounded-full"
-              style={{ background: `radial-gradient(circle, ${PILLARS[0].accent}55 0%, transparent 70%)` }}
-            />
-            <span
-              className="font-display text-7xl md:text-9xl block leading-none mb-6 opacity-30"
-              style={{ color: PILLARS[0].accent }}
-            >
-              {PILLARS[0].n}
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-[#F4B83A] mb-3 block">
-              {PILLARS[0].kicker}
-            </span>
-            <h3 className="font-display text-3xl md:text-4xl leading-tight mb-5">
-              {PILLARS[0].title}
-            </h3>
-            <p className="text-[#FBF6EE]/80 text-lg leading-relaxed max-w-md">
-              {PILLARS[0].desc}
-            </p>
-          </article>
-
-          {/* Two stacked cards - col-span-5 */}
-          <div className="md:col-span-5 flex flex-col gap-6 md:gap-8">
-            {PILLARS.slice(1).map((p) => (
+        {/* Zigzag pillars */}
+        <div className="space-y-32 md:space-y-44">
+          {PILLARS.map((pillar) => {
+            const isRight = pillar.align === "right";
+            return (
               <article
-                key={p.n}
-                className="relative flex-1 bg-[#FBF6EE] rounded-2xl p-7 md:p-8 border border-[#1A1614]/10 group hover:border-[#B7481E]/40 transition-colors"
+                key={pillar.n}
+                className="relative grid md:grid-cols-12 gap-8 md:gap-16 items-center"
               >
-                <div className="flex items-baseline justify-between mb-4">
-                  <span
-                    className="font-display text-5xl leading-none"
-                    style={{ color: p.accent }}
-                  >
-                    {p.n}
-                  </span>
-                  <span className="font-mono text-xs uppercase tracking-widest text-[#1A1614]/50">
-                    {p.kicker}
-                  </span>
+                {/* Decorative dashed line - desktop only */}
+                <DashedLine
+                  variant="pillar-curve"
+                  className={`absolute hidden md:block top-1/4 ${
+                    isRight ? "left-1/3 -scale-x-100" : "right-1/3"
+                  } w-[30%] h-[60%] -z-0 opacity-60`}
+                  color="#0F0E0C"
+                />
+
+                {/* Text */}
+                <div
+                  className={`md:col-span-6 relative z-10 ${
+                    isRight ? "md:order-1" : "md:order-2"
+                  }`}
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <NumberCircle n={pillar.n} color={pillar.color} size="md" />
+                    <StepBadge variant={pillar.color === "sun" ? "accent" : "default"}>
+                      {pillar.badge}
+                    </StepBadge>
+                  </div>
+
+                  <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-[#0F0E0C] tracking-[-0.02em] leading-[1.05] mb-6">
+                    {pillar.title}
+                  </h3>
+
+                  <p className="text-lg text-[#0F0E0C]/75 leading-relaxed mb-8 max-w-md">
+                    {pillar.desc}
+                  </p>
+
+                  <div className="inline-block">
+                    <EditorialBubble
+                      variant="client"
+                      timestamp={pillar.quote.time}
+                    >
+                      {pillar.quote.text}
+                    </EditorialBubble>
+                  </div>
                 </div>
-                <h3 className="font-display text-xl md:text-2xl leading-tight mb-3 text-[#1A1614]">
-                  {p.title}
-                </h3>
-                <p className="text-[#1A1614]/70 leading-relaxed">{p.desc}</p>
+
+                {/* Illustration */}
+                <div
+                  className={`md:col-span-6 relative z-10 ${
+                    isRight ? "md:order-2" : "md:order-1"
+                  }`}
+                >
+                  <IllustrationFrame
+                    src={pillar.illustration.src}
+                    alt={pillar.illustration.alt}
+                    width={560}
+                    height={420}
+                  />
+                </div>
               </article>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>

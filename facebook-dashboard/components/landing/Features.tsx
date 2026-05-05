@@ -1,3 +1,5 @@
+import { StepBadge } from "./StepBadge";
+
 const FEATURES = [
   {
     title: "Réponses 24/7 sur Messenger",
@@ -6,7 +8,7 @@ const FEATURES = [
   },
   {
     title: "Détection commande automatique",
-    desc: "Quand un client parle paiement ou livraison, le bot capte l'adresse et le numéro.",
+    desc: "Quand un client parle paiement ou livraison, le bot capte adresse et numéro.",
   },
   {
     title: "Bilingue Français + Malgache",
@@ -41,20 +43,22 @@ const FEATURES = [
 
 export function Features() {
   return (
-    <section className="py-20 md:py-32 bg-[#1A1614] text-[#FBF6EE] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="grid md:grid-cols-12 gap-8 mb-16">
+    <section className="py-24 md:py-36 bg-[#0F0E0C] text-[#FAF9F5] relative overflow-hidden">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8">
+        <div className="grid md:grid-cols-12 gap-8 mb-20">
           <div className="md:col-span-7">
-            <span className="font-mono text-xs text-[#F4B83A] uppercase tracking-widest mb-4 block">
-              Ce qu&apos;il y a dans la boîte
-            </span>
-            <h2 className="font-display text-4xl md:text-6xl tracking-tight leading-[1.05]">
-              Tout ce qu&apos;il te faut.{" "}
-              <span className="italic text-[#F4B83A]">Rien de plus.</span>
+            <div className="mb-6">
+              <StepBadge variant="dark">Ce qu&apos;il y a dedans</StepBadge>
+            </div>
+            <h2 className="font-display text-4xl md:text-6xl tracking-[-0.02em] leading-[1.0]">
+              Tout ce qu&apos;il te faut.
+              <br />
+              <em className="not-italic font-display italic text-[#F4B83A]">Rien de plus</em>
+              <span className="text-[#F4B83A]">.</span>
             </h2>
           </div>
           <div className="md:col-span-5 md:pt-8">
-            <p className="text-[#FBF6EE]/70 text-lg leading-relaxed">
+            <p className="text-[#FAF9F5]/70 text-lg leading-relaxed">
               Pensé pour les commerçants malgaches et francophones. Pas pour les
               géants américains qui veulent te facturer en dollars.
             </p>
@@ -62,23 +66,25 @@ export function Features() {
         </div>
 
         {/* Features asymmetric grid */}
-        <div className="grid md:grid-cols-12 gap-6">
+        <div className="grid md:grid-cols-12 gap-5">
           {FEATURES.map((f, i) => {
             const span = f.big ? "md:col-span-6" : "md:col-span-3";
             return (
               <article
                 key={f.title}
-                className={`${span} relative border border-[#FBF6EE]/15 rounded-xl p-6 md:p-7 hover:border-[#F4B83A]/50 hover:bg-[#FBF6EE]/[0.03] transition-all duration-300 group`}
+                className={`${span} relative border border-[#FAF9F5]/12 rounded-2xl p-6 md:p-8 hover:border-[#F4B83A]/50 hover:bg-[#FAF9F5]/[0.025] transition-all duration-300`}
               >
-                <span className="font-mono text-xs text-[#F4B83A] block mb-4">
-                  {String(i + 1).padStart(2, "0")}
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#F4B83A] block mb-5">
+                  {String(i + 1).padStart(2, "0")} /09
                 </span>
-                <h3 className={`font-display ${f.big ? "text-2xl md:text-3xl" : "text-lg md:text-xl"} leading-tight mb-3`}>
+                <h3
+                  className={`font-display ${
+                    f.big ? "text-2xl md:text-[1.75rem]" : "text-lg md:text-xl"
+                  } leading-tight mb-3 tracking-[-0.01em]`}
+                >
                   {f.title}
                 </h3>
-                <p className="text-[#FBF6EE]/70 text-sm leading-relaxed">
-                  {f.desc}
-                </p>
+                <p className="text-[#FAF9F5]/70 text-sm leading-relaxed">{f.desc}</p>
               </article>
             );
           })}

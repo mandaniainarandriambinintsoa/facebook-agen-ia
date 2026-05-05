@@ -1,64 +1,77 @@
+import { StepBadge, NumberCircle } from "./StepBadge";
+import { DashedLine } from "./DashedLine";
+
 const STEPS = [
   {
-    n: "I.",
+    n: 1,
+    roman: "I.",
     title: "Connecte ta page Facebook",
-    desc: "Login en 1 clic via OAuth. On synchronise ta page Messenger et on configure les webhooks. Aucun code à toucher.",
-    detail: "OAuth Meta · 1 clic · 30 secondes",
+    desc: "Login en 1 clic via OAuth Facebook. On synchronise ta page Messenger automatiquement, sans toucher au code.",
+    detail: "OAuth · 1 clic · 30 secondes",
   },
   {
-    n: "II.",
+    n: 2,
+    roman: "II.",
     title: "Upload ton catalogue Excel",
-    desc: "Glisse-dépose ton fichier produits. Valina-Bot apprend les noms, prix, tailles et photos via notre moteur RAG bilingue Français + Malgache.",
-    detail: "Excel ou Google Sheets · Apprentissage instantané",
+    desc: "Glisse ton fichier produits. Valina-Bot apprend les noms, prix, tailles et photos via notre moteur RAG bilingue.",
+    detail: "Excel ou CSV · Apprentissage instantané",
   },
   {
-    n: "III.",
+    n: 3,
+    roman: "III.",
     title: "Active et dors tranquille",
-    desc: "Tu testes un message, tu valides, tu actives. Le bot commence à répondre. Tu vois tout en temps réel dans ton dashboard.",
-    detail: "Test inclus · Activation immédiate · Dashboard live",
+    desc: "Tu testes un message, tu valides, tu actives. Le bot commence à répondre. Tu vois tout en direct dans ton dashboard.",
+    detail: "Test inclus · Activation immédiate",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how" className="py-20 md:py-32 bg-[#FBF6EE] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="max-w-3xl mb-16">
-          <span className="font-mono text-xs text-[#2D4A3E] uppercase tracking-widest mb-4 block">
-            Comment ça marche
-          </span>
-          <h2 className="font-display text-4xl md:text-5xl text-[#1A1614] tracking-tight leading-[1.05]">
-            Trois étapes,{" "}
-            <span className="italic text-[#2D4A3E]">dix minutes</span>,<br />
-            zéro ligne de code.
+    <section id="how" className="py-24 md:py-36 bg-[#F4ECE0] relative overflow-hidden">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <div className="mb-6">
+            <StepBadge>Comment ça marche</StepBadge>
+          </div>
+          <h2 className="font-display text-4xl md:text-6xl text-[#0F0E0C] tracking-[-0.02em] leading-[1.0]">
+            Trois étapes,
+            <br />
+            <em className="not-italic font-display italic text-[#B7481E]">dix minutes</em>,<br />
+            zéro ligne de code<span className="text-[#B7481E]">.</span>
           </h2>
         </div>
 
-        {/* Editorial timeline */}
-        <div className="relative space-y-12 md:space-y-0 md:grid md:grid-cols-3 md:gap-px md:bg-[#1A1614]/10">
+        {/* Steps with horizontal dashed connectors */}
+        <div className="grid md:grid-cols-3 gap-12 md:gap-8 relative">
           {STEPS.map((step, i) => (
-            <article
-              key={step.n}
-              className="relative bg-[#FBF6EE] md:p-8 md:py-12 md:hover:bg-[#F5E9D9] transition-colors duration-300 group"
-            >
-              <div className="flex items-baseline gap-4 mb-6">
-                <span className="font-display italic text-5xl md:text-6xl text-[#B7481E] leading-none">
-                  {step.n}
+            <article key={step.n} className="relative">
+              {/* Dashed connector to next step (desktop only) */}
+              {i < STEPS.length - 1 && (
+                <DashedLine
+                  variant="step-arrow"
+                  className="hidden md:block absolute top-8 -right-12 w-24 h-12 z-0 text-[#0F0E0C]"
+                  color="#0F0E0C"
+                />
+              )}
+
+              <div className="relative z-10 bg-[#FAF9F5] rounded-3xl p-8 md:p-10 border border-[#0F0E0C]/8 h-full">
+                <div className="flex items-baseline justify-between mb-6">
+                  <span className="font-display italic text-5xl md:text-6xl text-[#B7481E] leading-none">
+                    {step.roman}
+                  </span>
+                  <NumberCircle n={step.n} color="ink" size="sm" />
+                </div>
+
+                <h3 className="font-display text-2xl md:text-[1.75rem] text-[#0F0E0C] leading-tight mb-4 tracking-[-0.01em]">
+                  {step.title}
+                </h3>
+
+                <p className="text-[#0F0E0C]/75 leading-relaxed mb-6">{step.desc}</p>
+
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#0F0E0C]/45 block">
+                  {step.detail}
                 </span>
-                <span className="h-px flex-1 bg-[#1A1614]/15 mt-6" />
               </div>
-
-              <h3 className="font-display text-2xl md:text-3xl text-[#1A1614] leading-tight mb-4">
-                {step.title}
-              </h3>
-
-              <p className="text-[#1A1614]/70 leading-relaxed mb-6 max-w-md">
-                {step.desc}
-              </p>
-
-              <span className="font-mono text-xs uppercase tracking-widest text-[#1A1614]/50 block">
-                {step.detail}
-              </span>
             </article>
           ))}
         </div>
