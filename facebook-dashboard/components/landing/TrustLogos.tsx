@@ -1,25 +1,29 @@
 export function TrustLogos() {
   const platforms = [
-    "Messenger",
-    "Mvola",
-    "Orange Money",
-    "Airtel Money",
+    { name: "Messenger", role: "Plateforme" },
+    { name: "Mvola", role: "Paiement" },
+    { name: "Orange Money", role: "Paiement" },
+    { name: "Airtel Money", role: "Paiement" },
   ];
 
   return (
-    <section className="border-y border-slate-200 bg-slate-50/50 py-10">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <p className="text-center text-xs font-medium uppercase tracking-wider text-slate-500 mb-6">
-          Compatible avec
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-          {platforms.map((p) => (
-            <span
-              key={p}
-              className="text-slate-400 font-semibold text-sm md:text-base"
+    <section className="py-14 bg-[#FBF6EE]">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {platforms.map((p, i) => (
+            <div
+              key={p.name}
+              className={`flex flex-col gap-1 ${
+                i < platforms.length - 1 ? "md:border-r md:border-[#1A1614]/10 md:pr-8" : ""
+              }`}
             >
-              {p}
-            </span>
+              <span className="font-mono text-xs text-[#1A1614]/40 uppercase tracking-widest">
+                {p.role}
+              </span>
+              <span className="font-display text-2xl text-[#1A1614]">
+                {p.name}
+              </span>
+            </div>
           ))}
         </div>
       </div>

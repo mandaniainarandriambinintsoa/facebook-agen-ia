@@ -1,68 +1,104 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { ChatMockup } from "./ChatMockup";
+import { SunBurst } from "./LambaPattern";
 
 export function Hero() {
   return (
-    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+    <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden bg-[#FBF6EE]">
+      {/* Background atmosphere */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-50 via-white to-white"
+        className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-[#F4B83A]/15 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute -top-24 left-1/2 -translate-x-1/2 -z-10 h-96 w-[60rem] rounded-full bg-emerald-500/10 blur-3xl"
+        className="absolute top-20 -right-32 w-[450px] h-[450px] rounded-full bg-[#B7481E]/10 blur-3xl"
+      />
+      <SunBurst
+        size={280}
+        color="#B7481E"
+        opacity={0.15}
+        className="absolute -bottom-32 -right-32 hidden md:block"
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 mb-6">
-            <Sparkles className="h-3.5 w-3.5" />
-            Setup en 10 minutes, sans code
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-8 grid md:grid-cols-12 gap-8 md:gap-12 items-center">
+        {/* Left side - editorial text */}
+        <div className="md:col-span-7 relative z-10">
+          {/* Kicker */}
+          <div className="inline-flex items-center gap-2 mb-8">
+            <span className="h-px w-10 bg-[#B7481E]" />
+            <span className="font-display italic text-[#B7481E] text-sm tracking-wide">
+              Made in Madagascar, pour les commerçants d&apos;ici
+            </span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-tight">
-            Tes clients posent leur question{" "}
-            <span className="bg-gradient-to-r from-emerald-600 to-amber-500 bg-clip-text text-transparent">
-              pendant que tu dors.
-            </span>
+          {/* Headline editorial */}
+          <h1 className="font-display text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[0.95] text-[#1A1614] tracking-tight">
+            Vendre
+            <br />
+            <span className="italic text-[#B7481E]">pendant</span>{" "}
+            que tu
+            <br />
+            dors.
           </h1>
 
-          <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-xl">
-            Valina-Bot répond, vend et collecte les commandes 24/7 sur ta page
-            Messenger Facebook. L&apos;agent IA qui transforme ta messagerie en
-            machine à vente automatique.
+          {/* Sub */}
+          <p className="mt-8 text-lg md:text-xl text-[#1A1614]/75 max-w-lg leading-relaxed">
+            Valina-Bot répond aux messages de tes clients sur{" "}
+            <span className="text-[#1A1614] font-medium">Messenger Facebook</span>{" "}
+            24h/24. Il comprend le malgache, prend les commandes en{" "}
+            <span className="font-display italic text-[#B7481E]">Mvola</span>, et te laisse dormir tranquille.
           </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20"
+          {/* CTAs */}
+          <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <Link
+              href="/login"
+              className="group inline-flex items-center gap-3 rounded-full bg-[#1A1614] text-[#FBF6EE] pl-6 pr-2 py-2 text-base font-medium hover:bg-[#B7481E] transition-all duration-300"
             >
-              <Link href="/login">
-                Démarrer l&apos;essai gratuit
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="border-slate-300"
+              Démarrer l&apos;essai gratuit
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F4B83A] text-[#1A1614] group-hover:translate-x-0.5 transition-transform">
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            </Link>
+            <a
+              href="#story"
+              className="text-[#1A1614]/70 hover:text-[#1A1614] underline underline-offset-4 decoration-[#B7481E] decoration-2 transition-colors text-base"
             >
-              <a href="#how">Voir comment ça marche</a>
-            </Button>
+              Voir le constat
+            </a>
           </div>
 
-          <p className="mt-4 text-sm text-slate-500">
-            7 jours gratuits · Pas de carte bancaire · Annulable en 1 clic
+          {/* Trust line */}
+          <p className="mt-8 text-sm text-[#1A1614]/60 font-medium">
+            7 jours gratuits · Sans carte bancaire · Mise en service en 10 min
           </p>
         </div>
 
-        <div className="relative flex justify-center md:justify-end">
+        {/* Right side - mockup */}
+        <div className="md:col-span-5 relative z-10 flex justify-center md:justify-end items-center">
           <ChatMockup />
+        </div>
+      </div>
+
+      {/* Bottom marquee bar */}
+      <div className="relative mt-16 md:mt-24 overflow-hidden border-t border-b border-[#1A1614]/10 bg-[#1A1614]">
+        <div className="flex gap-12 py-3 whitespace-nowrap animate-[marquee_30s_linear_infinite] text-[#FBF6EE] font-display italic">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex gap-12 items-center">
+              <span>Misy ihany ny taille M</span>
+              <span className="text-[#F4B83A]">✦</span>
+              <span>Mvola accepté</span>
+              <span className="text-[#F4B83A]">✦</span>
+              <span>Livraison Tana en 24h</span>
+              <span className="text-[#F4B83A]">✦</span>
+              <span>Réponse en 5 secondes</span>
+              <span className="text-[#F4B83A]">✦</span>
+              <span>Salama ô tompoko</span>
+              <span className="text-[#F4B83A]">✦</span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

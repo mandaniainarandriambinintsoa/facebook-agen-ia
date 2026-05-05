@@ -1,43 +1,51 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { LambaPattern } from "./LambaPattern";
 
 export function FinalCTA() {
   return (
-    <section className="py-20 md:py-28">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 px-6 py-16 md:px-16 md:py-20 text-center">
-          <div
-            aria-hidden
-            className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-amber-500/20 blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-emerald-500/20 blur-3xl"
-          />
+    <section className="py-20 md:py-28 bg-[#FBF6EE]">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+        <div className="relative overflow-hidden rounded-3xl bg-[#B7481E] text-[#FBF6EE] px-6 py-16 md:px-16 md:py-24">
+          <LambaPattern color="#FBF6EE" opacity={0.08} />
 
-          <h2 className="relative text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-            Lance Valina-Bot sur ta page en 10 minutes
-          </h2>
-          <p className="relative mt-4 text-lg text-slate-200 max-w-xl mx-auto">
-            Pas de carte bancaire, pas d&apos;engagement. Tu testes pendant 7
-            jours, tu décides après.
-          </p>
+          <div className="relative max-w-3xl">
+            <span className="font-mono text-xs text-[#F4B83A] uppercase tracking-widest mb-6 block">
+              Prêt ? Allez.
+            </span>
 
-          <Button
-            asChild
-            size="lg"
-            className="relative mt-8 bg-amber-500 hover:bg-amber-600 text-white text-base px-8 shadow-xl shadow-amber-500/30"
-          >
-            <Link href="/login">
-              Démarrer l&apos;essai gratuit
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+            <h2 className="font-display text-4xl md:text-6xl lg:text-7xl tracking-tight leading-[1.0]">
+              Mets Valina-Bot
+              <br />
+              <span className="italic">sur ta page</span> en
+              <br />
+              dix minutes.
+            </h2>
 
-          <p className="relative mt-4 text-sm text-slate-300">
-            Setup guidé · Support par email · Hébergé en UE
-          </p>
+            <p className="mt-8 text-lg md:text-xl text-[#FBF6EE]/85 max-w-xl leading-relaxed">
+              Pas de carte bancaire, pas d&apos;engagement. Tu testes pendant 7
+              jours, tu décides après. La seule chose que tu risques, c&apos;est
+              de mieux dormir.
+            </p>
+
+            <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+              <Link
+                href="/login"
+                className="group inline-flex items-center gap-3 rounded-full bg-[#FBF6EE] text-[#1A1614] pl-7 pr-2 py-2 text-base font-medium hover:bg-[#F4B83A] transition-all duration-300"
+              >
+                Démarrer l&apos;essai gratuit
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1614] text-[#FBF6EE] group-hover:translate-x-0.5 transition-transform">
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </Link>
+              <a
+                href="mailto:contact@manda-ia.com"
+                className="text-[#FBF6EE]/85 hover:text-[#FBF6EE] underline underline-offset-4 decoration-[#F4B83A] decoration-2"
+              >
+                Parler à Manda d&apos;abord
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
