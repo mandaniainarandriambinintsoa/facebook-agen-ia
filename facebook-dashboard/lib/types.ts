@@ -76,6 +76,7 @@ export interface BotConfig {
   custom_system_prompt: string;
   conversation_mode: "catalog" | "classic";
   auto_comment_reply: boolean;
+  onboarding_step?: string;
 }
 
 export interface PublicConfig {

@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { tenantApi } from "@/lib/api";
 import { toast } from "sonner";
 
 function CallbackHandler() {
@@ -24,21 +23,10 @@ function CallbackHandler() {
 
     if (token) {
       login(token);
-
-      // Onboarding routing : si l'utilisateur n'a pas termine son onboarding,
-      // on l'envoie vers le wizard plutot que directement au dashboard.
-      (async () => {
-        try {
-          const config = await tenantApi<{ onboarding_step?: string }>("/config");
-          if (config && config.onboarding_step !== "complete") {
-            router.replace("/onboarding");
-          } else {
-            router.replace("/dashboard");
-          }
-        } catch {
-          router.replace("/dashboard");
-        }
-      })();
+      // Routing simplifie : tout le monde va sur /dashboard.
+      // Si onboarding pas complete, le OnboardingBanner s affiche en haut
+      // du dashboard pour guider vers /onboarding sans forcer.
+      router.replace("/dashboard");
     } else {
       router.replace("/");
     }

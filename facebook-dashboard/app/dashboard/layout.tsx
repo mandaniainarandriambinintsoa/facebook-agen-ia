@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { DashboardTourMount } from "@/components/dashboard/DashboardTourMount";
+import { OnboardingBanner } from "@/components/dashboard/OnboardingBanner";
 
 export default function DashboardLayout({
   children,
@@ -30,6 +31,7 @@ export default function DashboardLayout({
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
+        <OnboardingBanner />
         <Header />
         <main
           className="flex-1 overflow-auto bg-muted/40 p-6 md:p-8 lg:p-10"
