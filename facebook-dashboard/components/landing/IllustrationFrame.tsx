@@ -30,7 +30,7 @@ export function IllustrationFrame({
   return (
     <figure className={`relative ${className || ""}`}>
       <div
-        className="relative rounded-3xl overflow-hidden bg-[#F4ECE0]"
+        className="relative rounded-3xl overflow-hidden bg-[#F0F2F5]"
         style={{ aspectRatio: `${width}/${height}` }}
       >
         {!error ? (
@@ -44,13 +44,13 @@ export function IllustrationFrame({
         ) : (
           <div className="absolute inset-0 flex items-center justify-center p-8">
             <div className="text-center">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-[#0F0E0C]/40 mb-3">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-[#1C1E21]/40 mb-3">
                 Illustration manquante
               </div>
-              <div className="font-display text-lg text-[#0F0E0C]/60 mb-2 italic">
+              <div className="text-lg text-[#1C1E21]/60 mb-2 italic">
                 {alt}
               </div>
-              <div className="font-mono text-xs text-[#0F0E0C]/40 break-all">
+              <div className="font-mono text-xs text-[#1C1E21]/40 break-all">
                 {src}
               </div>
             </div>
@@ -58,7 +58,7 @@ export function IllustrationFrame({
         )}
       </div>
       {caption && (
-        <figcaption className="mt-3 text-center font-display italic text-sm text-[#0F0E0C]/60">
+        <figcaption className="mt-3 text-center italic text-sm text-[#1C1E21]/60">
           {caption}
         </figcaption>
       )}

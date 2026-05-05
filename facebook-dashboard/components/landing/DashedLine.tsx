@@ -31,7 +31,7 @@ const PATHS: Record<string, { d: string; viewBox: string }> = {
 export function DashedLine({
   variant = "hero-cta",
   className,
-  color = "#0F0E0C",
+  color = "#1C1E21",
   strokeWidth = 2,
 }: DashedLineProps) {
   const { d, viewBox } = PATHS[variant];

@@ -5,9 +5,9 @@ interface StepBadgeProps {
 
 export function StepBadge({ children, variant = "default" }: StepBadgeProps) {
   const styles = {
-    default: "bg-[#F4ECE0] border-[#0F0E0C]/15 text-[#0F0E0C]",
-    accent: "bg-[#F4B83A]/30 border-[#F4B83A] text-[#0F0E0C]",
-    dark: "bg-[#0F0E0C] border-[#0F0E0C] text-[#FAF9F5]",
+    default: "bg-[#F0F2F5] border-[#1C1E21]/15 text-[#1C1E21]",
+    accent: "bg-[#F4B83A]/30 border-[#F4B83A] text-[#1C1E21]",
+    dark: "bg-[#1C1E21] border-[#1C1E21] text-[#F7F8FA]",
   };
 
   return (
@@ -26,10 +26,10 @@ interface NumberCircleProps {
 }
 
 const COLOR_MAP = {
-  terracotta: "bg-[#B7481E] text-[#FAF9F5]",
-  sun: "bg-[#F4B83A] text-[#0F0E0C]",
-  forest: "bg-[#2D4A3E] text-[#FAF9F5]",
-  ink: "bg-[#0F0E0C] text-[#FAF9F5]",
+  terracotta: "bg-[#1877F2] text-[#F7F8FA]",
+  sun: "bg-[#F4B83A] text-[#1C1E21]",
+  forest: "bg-[#16A34A] text-[#F7F8FA]",
+  ink: "bg-[#1C1E21] text-[#F7F8FA]",
 };
 
 const SIZE_MAP = {
@@ -41,7 +41,7 @@ const SIZE_MAP = {
 export function NumberCircle({ n, color = "terracotta", size = "md" }: NumberCircleProps) {
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-full font-display font-medium ${COLOR_MAP[color]} ${SIZE_MAP[size]}`}
+      className={`inline-flex items-center justify-center rounded-full font-medium ${COLOR_MAP[color]} ${SIZE_MAP[size]}`}
     >
       {n}
     </span>

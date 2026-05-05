@@ -29,17 +29,17 @@ const COLUMNS = [
 
 export function LandingFooter() {
   return (
-    <footer className="bg-[#0F0E0C] text-[#FAF9F5]">
+    <footer className="bg-[#1C1E21] text-[#F7F8FA]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
         <div className="grid md:grid-cols-12 gap-10 mb-12">
           <div className="md:col-span-5">
             <Link
               href="/"
-              className="font-display text-3xl italic font-medium inline-block mb-4"
+              className="text-3xl italic font-medium inline-block mb-4"
             >
               Valina<span className="text-[#F4B83A]">.</span>
             </Link>
-            <p className="text-[#FAF9F5]/70 max-w-sm leading-relaxed">
+            <p className="text-[#F7F8FA]/70 max-w-sm leading-relaxed">
               L&apos;agent IA qui répond à tes clients sur Messenger Facebook
               24/7. Made in Madagascar, pour les commerçants malgaches et
               francophones.
@@ -56,7 +56,7 @@ export function LandingFooter() {
                   <li key={l.label}>
                     <Link
                       href={l.href}
-                      className="text-[#FAF9F5]/70 hover:text-[#FAF9F5] transition-colors text-sm"
+                      className="text-[#F7F8FA]/70 hover:text-[#F7F8FA] transition-colors text-sm"
                     >
                       {l.label}
                     </Link>
@@ -69,23 +69,23 @@ export function LandingFooter() {
           <div className="md:col-span-1" />
         </div>
 
-        <div className="pt-8 border-t border-[#FAF9F5]/15 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between text-xs text-[#FAF9F5]/50">
+        <div className="pt-8 border-t border-[#F7F8FA]/15 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between text-xs text-[#F7F8FA]/50">
           <div className="space-y-1">
             <p>
               © 2026{" "}
-              <strong className="text-[#FAF9F5]/70">RANDRIAMBININTSOA MANDANIAINA</strong>
+              <strong className="text-[#F7F8FA]/70">RANDRIAMBININTSOA MANDANIAINA</strong>
             </p>
             <p>
               LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Madagascar ·{" "}
               <a
                 href="mailto:contact@manda-ia.com"
-                className="underline hover:text-[#FAF9F5]"
+                className="underline hover:text-[#F7F8FA]"
               >
                 contact@manda-ia.com
               </a>
             </p>
           </div>
-          <p className="font-display italic text-[#F4B83A]">Made in Madagascar</p>
+          <p className="italic text-[#F4B83A]">Made in Madagascar</p>
         </div>
       </div>
     </footer>

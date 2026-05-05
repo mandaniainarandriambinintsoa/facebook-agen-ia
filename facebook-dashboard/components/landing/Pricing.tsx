@@ -49,34 +49,34 @@ export function Pricing() {
   const currency = REGIONS.find((r) => r.id === region)!.currency;
 
   return (
-    <section id="pricing" className="py-24 md:py-36 bg-[#FAF9F5]">
+    <section id="pricing" className="py-24 md:py-36 bg-[#F7F8FA]">
       <div className="max-w-5xl mx-auto px-5 sm:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="mb-6">
             <StepBadge>Tarifs</StepBadge>
           </div>
-          <h2 className="font-display text-4xl md:text-5xl text-[#0F0E0C] tracking-[-0.02em] leading-[1.05]">
+          <h2 className="text-4xl md:text-5xl text-[#1C1E21] tracking-[-0.02em] leading-[1.05]">
             Un prix juste,{" "}
-            <em className="not-italic font-display italic text-[#B7481E]">honnête</em>,
+            <em className="not-italic italic text-[#1877F2]">honnête</em>,
             <br />
-            sans surprise<span className="text-[#B7481E]">.</span>
+            sans surprise<span className="text-[#1877F2]">.</span>
           </h2>
-          <p className="mt-6 text-[#0F0E0C]/70 text-lg">
+          <p className="mt-6 text-[#1C1E21]/70 text-lg">
             Choisis ton marché. Tu peux changer de plan à tout moment.
           </p>
         </div>
 
         {/* Region toggle */}
         <div className="flex justify-center mb-12">
-          <div className="inline-flex rounded-full border border-[#0F0E0C]/15 bg-[#FAF9F5] p-1.5 shadow-sm">
+          <div className="inline-flex rounded-full border border-[#1C1E21]/15 bg-[#F7F8FA] p-1.5 shadow-sm">
             {REGIONS.map((r) => (
               <button
                 key={r.id}
                 onClick={() => setRegion(r.id)}
                 className={`px-4 sm:px-6 py-2.5 text-sm font-medium rounded-full transition-all duration-200 ${
                   region === r.id
-                    ? "bg-[#0F0E0C] text-[#FAF9F5] shadow"
-                    : "text-[#0F0E0C]/60 hover:text-[#0F0E0C]"
+                    ? "bg-[#1C1E21] text-[#F7F8FA] shadow"
+                    : "text-[#1C1E21]/60 hover:text-[#1C1E21]"
                 }`}
               >
                 {r.label}
@@ -93,27 +93,27 @@ export function Pricing() {
                 key={key}
                 className={`relative rounded-3xl p-8 md:p-10 ${
                   plan.highlighted
-                    ? "bg-[#0F0E0C] text-[#FAF9F5] shadow-2xl"
-                    : "bg-[#F4ECE0] text-[#0F0E0C] border border-[#0F0E0C]/10"
+                    ? "bg-[#1C1E21] text-[#F7F8FA] shadow-2xl"
+                    : "bg-[#F0F2F5] text-[#1C1E21] border border-[#1C1E21]/10"
                 }`}
               >
                 {plan.highlighted && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center rounded-full bg-[#F4B83A] text-[#0F0E0C] text-[11px] font-medium px-4 py-1.5 font-mono uppercase tracking-[0.2em]">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center rounded-full bg-[#F4B83A] text-[#1C1E21] text-[11px] font-medium px-4 py-1.5 font-mono uppercase tracking-[0.2em]">
                     Recommandé
                   </span>
                 )}
 
                 <div className="flex items-baseline justify-between mb-6">
                   <h3
-                    className={`font-display text-3xl tracking-[-0.01em] ${
-                      plan.highlighted ? "text-[#FAF9F5]" : "text-[#0F0E0C]"
+                    className={`text-3xl tracking-[-0.01em] ${
+                      plan.highlighted ? "text-[#F7F8FA]" : "text-[#1C1E21]"
                     }`}
                   >
                     {plan.name}
                   </h3>
                   <span
                     className={`font-mono text-[10px] uppercase tracking-[0.2em] ${
-                      plan.highlighted ? "text-[#F4B83A]" : "text-[#B7481E]"
+                      plan.highlighted ? "text-[#F4B83A]" : "text-[#1877F2]"
                     }`}
                   >
                     {plan.tagline}
@@ -123,15 +123,15 @@ export function Pricing() {
                 <div className="mb-8">
                   <div className="flex items-baseline gap-2 mb-2">
                     <span
-                      className={`font-display text-5xl md:text-6xl tracking-[-0.02em] ${
-                        plan.highlighted ? "text-[#FAF9F5]" : "text-[#0F0E0C]"
+                      className={`text-5xl md:text-6xl tracking-[-0.02em] ${
+                        plan.highlighted ? "text-[#F7F8FA]" : "text-[#1C1E21]"
                       }`}
                     >
                       {plan.prices[region]}
                     </span>
                     <span
                       className={`text-lg ${
-                        plan.highlighted ? "text-[#FAF9F5]/70" : "text-[#0F0E0C]/60"
+                        plan.highlighted ? "text-[#F7F8FA]/70" : "text-[#1C1E21]/60"
                       }`}
                     >
                       {currency}
@@ -139,7 +139,7 @@ export function Pricing() {
                   </div>
                   <span
                     className={`text-sm ${
-                      plan.highlighted ? "text-[#FAF9F5]/60" : "text-[#0F0E0C]/60"
+                      plan.highlighted ? "text-[#F7F8FA]/60" : "text-[#1C1E21]/60"
                     }`}
                   >
                     par mois
@@ -150,15 +150,15 @@ export function Pricing() {
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-3 text-sm">
                       <span
-                        className={`font-display italic mt-0.5 ${
-                          plan.highlighted ? "text-[#F4B83A]" : "text-[#B7481E]"
+                        className={`italic mt-0.5 ${
+                          plan.highlighted ? "text-[#F4B83A]" : "text-[#1877F2]"
                         }`}
                       >
                         ✓
                       </span>
                       <span
                         className={
-                          plan.highlighted ? "text-[#FAF9F5]/85" : "text-[#0F0E0C]/80"
+                          plan.highlighted ? "text-[#F7F8FA]/85" : "text-[#1C1E21]/80"
                         }
                       >
                         {f}
@@ -171,8 +171,8 @@ export function Pricing() {
                   href="/login"
                   className={`block w-full text-center rounded-full px-6 py-3.5 text-base font-medium transition-all duration-300 ${
                     plan.highlighted
-                      ? "bg-[#F4B83A] text-[#0F0E0C] hover:bg-[#FFE9A8]"
-                      : "bg-[#0F0E0C] text-[#FAF9F5] hover:bg-[#B7481E]"
+                      ? "bg-[#F4B83A] text-[#1C1E21] hover:bg-[#FFE9A8]"
+                      : "bg-[#1C1E21] text-[#F7F8FA] hover:bg-[#1877F2]"
                   }`}
                 >
                   Démarrer l&apos;essai gratuit
@@ -182,7 +182,7 @@ export function Pricing() {
           )}
         </div>
 
-        <p className="text-center mt-10 text-sm text-[#0F0E0C]/55 font-medium">
+        <p className="text-center mt-10 text-sm text-[#1C1E21]/55 font-medium">
           7 jours gratuits sur tous les plans · Sans carte bancaire · Annulable en 1 clic
         </p>
       </div>

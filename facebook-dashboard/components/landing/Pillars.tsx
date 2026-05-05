@@ -46,22 +46,22 @@ const PILLARS = [
 
 export function Pillars() {
   return (
-    <section id="story" className="py-24 md:py-36 bg-[#FAF9F5]">
+    <section id="story" className="py-24 md:py-36 bg-[#F7F8FA]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8">
         {/* Section header */}
         <div className="text-center max-w-3xl mx-auto mb-20 md:mb-32">
           <div className="mb-6">
             <StepBadge>Le constat</StepBadge>
           </div>
-          <h2 className="font-display text-4xl md:text-6xl text-[#0F0E0C] tracking-[-0.02em] leading-[1.0]">
+          <h2 className="text-4xl md:text-6xl text-[#1C1E21] tracking-[-0.02em] leading-[1.0]">
             Tes clients posent les{" "}
-            <em className="not-italic font-display italic text-[#B7481E]">mêmes</em> questions,
+            <em className="not-italic italic text-[#1877F2]">mêmes</em> questions,
             <br />
-            tu réponds <em className="not-italic font-display italic">100 fois</em> par jour,
+            tu réponds <em className="not-italic italic">100 fois</em> par jour,
             <br />
-            et le soir tu dors mal<span className="text-[#B7481E]">.</span>
+            et le soir tu dors mal<span className="text-[#1877F2]">.</span>
           </h2>
-          <p className="mt-8 text-lg text-[#0F0E0C]/70 max-w-xl mx-auto leading-relaxed">
+          <p className="mt-8 text-lg text-[#1C1E21]/70 max-w-xl mx-auto leading-relaxed">
             Trois choses que Valina-Bot fait à ta place, dès le premier jour.
           </p>
         </div>
@@ -88,11 +88,11 @@ export function Pillars() {
                     </StepBadge>
                   </div>
 
-                  <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-[#0F0E0C] tracking-[-0.02em] leading-[1.05] mb-6">
+                  <h3 className="text-3xl md:text-4xl lg:text-5xl text-[#1C1E21] tracking-[-0.02em] leading-[1.05] mb-6">
                     {pillar.title}
                   </h3>
 
-                  <p className="text-lg text-[#0F0E0C]/75 leading-relaxed mb-8 max-w-md">
+                  <p className="text-lg text-[#1C1E21]/75 leading-relaxed mb-8 max-w-md">
                     {pillar.desc}
                   </p>
 

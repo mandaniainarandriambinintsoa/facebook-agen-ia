@@ -5,7 +5,7 @@ import { DashedLine } from "./DashedLine";
 
 export function Hero() {
   return (
-    <section className="relative pt-28 pb-12 md:pt-36 md:pb-20 overflow-hidden bg-[#FAF9F5]">
+    <section className="relative pt-28 pb-12 md:pt-36 md:pb-20 overflow-hidden bg-[#F7F8FA]">
       {/* Background atmosphere */}
       <div
         aria-hidden
@@ -13,7 +13,7 @@ export function Hero() {
       />
       <div
         aria-hidden
-        className="absolute top-32 -right-40 w-[450px] h-[450px] rounded-full bg-[#B7481E]/8 blur-3xl pointer-events-none"
+        className="absolute top-32 -right-40 w-[450px] h-[450px] rounded-full bg-[#1877F2]/8 blur-3xl pointer-events-none"
       />
 
       <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
@@ -21,45 +21,45 @@ export function Hero() {
           {/* Left : editorial headline */}
           <div className="md:col-span-7 relative z-10 pt-12 md:pt-20">
             <div className="inline-flex items-center gap-3 mb-8">
-              <span className="h-px w-12 bg-[#0F0E0C]/40" />
-              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#0F0E0C]/60">
+              <span className="h-px w-12 bg-[#1C1E21]/40" />
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#1C1E21]/60">
                 Made in Madagascar
               </span>
             </div>
 
-            <h1 className="font-display text-[3rem] sm:text-6xl md:text-[5.5rem] lg:text-[6.5rem] leading-[0.9] text-[#0F0E0C] tracking-[-0.02em]">
+            <h1 className="text-[3rem] sm:text-6xl md:text-[5.5rem] lg:text-[6.5rem] leading-[0.9] text-[#1C1E21] tracking-[-0.02em]">
               Vendre
               <br />
-              <em className="not-italic font-display italic text-[#B7481E]">pendant</em> que tu
+              <em className="not-italic italic text-[#1877F2]">pendant</em> que tu
               <br />
-              dors<span className="text-[#B7481E]">.</span>
+              dors<span className="text-[#1877F2]">.</span>
             </h1>
 
-            <p className="mt-8 text-lg md:text-xl text-[#0F0E0C]/75 max-w-md leading-relaxed">
+            <p className="mt-8 text-lg md:text-xl text-[#1C1E21]/75 max-w-md leading-relaxed">
               Valina-Bot répond aux messages de tes clients sur Messenger
               Facebook 24h/24. Il comprend le malgache, prend les commandes en{" "}
-              <span className="font-display italic text-[#B7481E]">Mvola</span>, et te laisse dormir.
+              <span className="italic text-[#1877F2]">Mvola</span>, et te laisse dormir.
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
               <Link
                 href="/login"
-                className="group inline-flex items-center gap-3 rounded-full bg-[#0F0E0C] text-[#FAF9F5] pl-7 pr-2 py-2.5 text-base font-medium hover:bg-[#B7481E] transition-all duration-300"
+                className="group inline-flex items-center gap-3 rounded-full bg-[#1C1E21] text-[#F7F8FA] pl-7 pr-2 py-2.5 text-base font-medium hover:bg-[#1877F2] transition-all duration-300"
               >
                 Démarrer l&apos;essai gratuit
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F4B83A] text-[#0F0E0C] group-hover:translate-x-0.5 transition-transform">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F4B83A] text-[#1C1E21] group-hover:translate-x-0.5 transition-transform">
                   <ArrowRight className="h-4 w-4" />
                 </span>
               </Link>
               <a
                 href="#story"
-                className="text-[#0F0E0C]/70 hover:text-[#0F0E0C] underline underline-offset-4 decoration-[#B7481E] decoration-2 transition-colors"
+                className="text-[#1C1E21]/70 hover:text-[#1C1E21] underline underline-offset-4 decoration-[#1877F2] decoration-2 transition-colors"
               >
                 Découvrir l&apos;histoire
               </a>
             </div>
 
-            <p className="mt-6 text-sm text-[#0F0E0C]/55">
+            <p className="mt-6 text-sm text-[#1C1E21]/55">
               7 jours gratuits · Sans carte bancaire · 10 min pour activer
             </p>
           </div>
@@ -74,14 +74,14 @@ export function Hero() {
         <DashedLine
           variant="hero-cta"
           className="absolute hidden md:block top-[42%] left-[55%] w-[18%] h-[28%] -z-0 opacity-40"
-          color="#0F0E0C"
+          color="#1C1E21"
         />
       </div>
 
       {/* Marquee bar */}
-      <div className="relative mt-16 md:mt-24 overflow-hidden border-t border-b border-[#0F0E0C]/12 bg-[#0F0E0C]">
+      <div className="relative mt-16 md:mt-24 overflow-hidden border-t border-b border-[#1C1E21]/12 bg-[#1C1E21]">
         <div
-          className="flex gap-12 py-3.5 whitespace-nowrap text-[#FAF9F5] font-display italic text-lg"
+          className="flex gap-12 py-3.5 whitespace-nowrap text-[#F7F8FA] italic text-lg"
           style={{ animation: "marquee 40s linear infinite" }}
         >
           {Array.from({ length: 4 }).map((_, i) => (
