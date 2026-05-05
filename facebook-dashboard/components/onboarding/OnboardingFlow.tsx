@@ -15,19 +15,23 @@ import { StepDone } from "./StepDone";
 
 const STEP_LABELS = ["Bienvenue", "Métier", "Accueil", "Catalogue", "Test", "Activé"];
 
-export function OnboardingFlow() {
+interface OnboardingFlowProps {
+  previewMode?: boolean;
+}
+
+export function OnboardingFlow({ previewMode = false }: OnboardingFlowProps) {
   const router = useRouter();
   const { authenticated } = useAuth();
   const { config, isLoading } = useConfig();
 
   const [step, setStep] = useState(1);
-  const [pageName, setPageName] = useState("ta page");
+  const [pageName, setPageName] = useState(previewMode ? "Manda Shop" : "ta page");
   const [botType, setBotType] = useState<string | null>(null);
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (previewMode) return;
     if (authenticated === false) {
-      // Petit delai pour laisser le contexte hydrater le token depuis localStorage
       const timer = setTimeout(() => {
         if (!localStorage.getItem("token")) {
           router.replace("/login?redirect=/onboarding");
@@ -35,16 +39,18 @@ export function OnboardingFlow() {
       }, 200);
       return () => clearTimeout(timer);
     }
-  }, [authenticated, router]);
+  }, [authenticated, router, previewMode]);
 
   useEffect(() => {
+    if (previewMode) return;
     if (config) {
       if (config.bot_type) setBotType(config.bot_type);
       if (config.welcome_message) setWelcomeMessage(config.welcome_message);
     }
-  }, [config]);
+  }, [config, previewMode]);
 
   useEffect(() => {
+    if (previewMode || !authenticated) return;
     const fetchTenantName = async () => {
       try {
         const stats = await tenantApi<{ page_name?: string }>("/stats");
@@ -53,10 +59,11 @@ export function OnboardingFlow() {
         // silent
       }
     };
-    if (authenticated) fetchTenantName();
-  }, [authenticated]);
+    fetchTenantName();
+  }, [authenticated, previewMode]);
 
   const persistConfig = async (updates: Record<string, unknown>) => {
+    if (previewMode) return;
     try {
       await tenantApi("/config", {
         method: "PUT",
@@ -87,35 +94,47 @@ export function OnboardingFlow() {
     goNext();
   };
 
-  const skipForLater = () => router.replace("/dashboard");
+  const skipForLater = () => {
+    if (previewMode) {
+      setStep(1);
+      return;
+    }
+    router.replace("/dashboard");
+  };
 
-  if (!authenticated || isLoading) {
+  if (!previewMode && (!authenticated || isLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FBF6EE]">
-        <p className="font-display italic text-[#1A1614]/50">Chargement...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F8FA]">
+        <p className="italic text-[#1C1E21]/50">Chargement...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FBF6EE] flex flex-col">
+    <div className="min-h-screen bg-[#F7F8FA] flex flex-col">
+      {previewMode && (
+        <div className="bg-[#1877F2] text-white text-center text-xs py-2 font-mono uppercase tracking-widest">
+          Mode preview · Aucune donnée n&apos;est sauvegardée
+        </div>
+      )}
+
       {/* Header minimal */}
-      <header className="border-b border-[#1A1614]/10 px-5 sm:px-8 py-5">
+      <header className="border-b border-[#1C1E21]/10 px-5 sm:px-8 py-5">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <span className="font-display text-2xl italic font-semibold text-[#1A1614]">
-            Valina<span className="text-[#B7481E]">.</span>
+          <span className="text-2xl italic font-semibold text-[#1C1E21]">
+            Valina<span className="text-[#1877F2]">.</span>
           </span>
           <button
             onClick={skipForLater}
-            className="text-xs text-[#1A1614]/50 hover:text-[#1A1614] transition-colors"
+            className="text-xs text-[#1C1E21]/50 hover:text-[#1C1E21] transition-colors"
           >
-            Passer pour l&apos;instant
+            {previewMode ? "Recommencer" : "Passer pour l'instant"}
           </button>
         </div>
       </header>
 
       {/* Progress bar */}
-      <div className="border-b border-[#1A1614]/10 px-5 sm:px-8 py-5">
+      <div className="border-b border-[#1C1E21]/10 px-5 sm:px-8 py-5">
         <div className="max-w-5xl mx-auto">
           <ProgressBar current={step} total={6} labels={STEP_LABELS} />
         </div>
@@ -124,11 +143,7 @@ export function OnboardingFlow() {
       {/* Step content */}
       <main className="flex-1 px-5 sm:px-8 py-12 md:py-20">
         {step === 1 && (
-          <Step1Welcome
-            pageName={pageName}
-            onNext={goNext}
-            onSkip={skipForLater}
-          />
+          <Step1Welcome pageName={pageName} onNext={goNext} onSkip={skipForLater} />
         )}
         {step === 2 && (
           <Step2Business
@@ -146,9 +161,16 @@ export function OnboardingFlow() {
             onNext={handleStep3}
           />
         )}
-        {step === 4 && <Step4Catalog onBack={goBack} onNext={goNext} />}
+        {step === 4 && (
+          <Step4Catalog onBack={goBack} onNext={goNext} previewMode={previewMode} />
+        )}
         {step === 5 && (
-          <Step5Test pageName={pageName} onBack={goBack} onNext={handleActivate} />
+          <Step5Test
+            pageName={pageName}
+            onBack={goBack}
+            onNext={handleActivate}
+            previewMode={previewMode}
+          />
         )}
         {step === 6 && <StepDone pageName={pageName} />}
       </main>
