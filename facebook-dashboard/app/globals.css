@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "driver.js/dist/driver.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -170,4 +171,68 @@
 }
 .font-mono {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* Driver.js theme override : palette bleu Facebook */
+.driver-popover {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #E4E6EA;
+  box-shadow: 0 20px 60px -10px rgba(28, 30, 33, 0.18);
+  font-family: var(--font-geist-sans);
+}
+.driver-popover-title {
+  color: #1C1E21;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.driver-popover-description {
+  color: #65676B;
+  line-height: 1.5;
+}
+.driver-popover-progress-text {
+  color: #65676B;
+  font-family: var(--font-geist-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+.driver-popover-next-btn,
+.driver-popover-done-btn {
+  background-color: #1877F2;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 500;
+  text-shadow: none;
+}
+.driver-popover-next-btn:hover,
+.driver-popover-done-btn:hover {
+  background-color: #0866FF;
+}
+.driver-popover-prev-btn {
+  background-color: transparent;
+  color: #65676B;
+  border: 1px solid #E4E6EA;
+  border-radius: 999px;
+  padding: 8px 16px;
+  text-shadow: none;
+}
+.driver-popover-prev-btn:hover {
+  background-color: #F0F2F5;
+  color: #1C1E21;
+}
+.driver-popover-close-btn {
+  color: #65676B;
+}
+.driver-popover-arrow-side-bottom.driver-popover-arrow,
+.driver-popover-arrow-side-top.driver-popover-arrow {
+  border-bottom-color: #ffffff;
+}
+.driver-active-element {
+  outline: 3px solid #1877F2 !important;
+  outline-offset: 4px;
+  border-radius: 8px;
 }

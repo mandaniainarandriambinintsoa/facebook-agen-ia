@@ -3,10 +3,11 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { PageSwitcher } from "@/components/layout/PageSwitcher";
-import { LogOut, Menu } from "lucide-react";
+import { LogOut, Menu, HelpCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./Sidebar";
+import { triggerDashboardTour } from "@/components/dashboard/DashboardTour";
 
 export function Header() {
   const { logout } = useAuth();
@@ -31,6 +32,15 @@ export function Header() {
       </Sheet>
 
       <div className="flex-1" />
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={triggerDashboardTour}
+        title="Relancer le tour guidé"
+        data-tour="header-help"
+      >
+        <HelpCircle className="h-4 w-4" />
+      </Button>
       <PageSwitcher />
       <Button variant="ghost" size="icon" onClick={handleLogout}>
         <LogOut className="h-4 w-4" />
