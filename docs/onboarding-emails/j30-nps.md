@@ -44,7 +44,7 @@ Merci pour ton temps.
 Manda
 
 ---
-contact@manda-ia.com
+contact@valina-bot.com
 ```
 
 ## Notes

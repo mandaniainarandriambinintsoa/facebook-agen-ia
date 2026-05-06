@@ -96,7 +96,7 @@ export default function PrivacyPage() {
               Pour toute question concernant cette politique de confidentialite :<br />
               <strong>RANDRIAMBININTSOA MANDANIAINA</strong><br />
               LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar<br />
-              Email : contact@manda-ia.com
+              Email : contact@valina-bot.com
             </p>
           </section>
         </CardContent>

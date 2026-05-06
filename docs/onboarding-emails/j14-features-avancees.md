@@ -63,7 +63,7 @@ que tu utilises toute la valeur du produit.
 Manda
 
 ---
-contact@manda-ia.com
+contact@valina-bot.com
 ```
 
 ## Notes

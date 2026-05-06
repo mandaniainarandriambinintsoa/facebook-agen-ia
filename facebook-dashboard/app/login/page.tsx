@@ -57,7 +57,7 @@ export default function LoginPage() {
           © 2026 <strong>RANDRIAMBININTSOA MANDANIAINA</strong>
         </p>
         <p>
-          Contact : contact@manda-ia.com ·{" "}
+          Contact : contact@valina-bot.com ·{" "}
           <Link href="/privacy" className="underline">Confidentialité</Link> ·{" "}
           <Link href="/terms" className="underline">Conditions</Link>
         </p>

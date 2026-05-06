@@ -52,7 +52,7 @@ Etat actuel de ton catalogue :
 Manda
 
 ---
-contact@manda-ia.com
+contact@valina-bot.com
 ```
 
 ## Notes

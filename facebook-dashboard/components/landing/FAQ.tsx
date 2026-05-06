@@ -18,7 +18,7 @@ const QUESTIONS = [
   },
   {
     q: "Et Instagram, WhatsApp ?",
-    a: "Pour le moment, Valina-Bot fonctionne uniquement sur Messenger Facebook. L'intégration Instagram DMs et WhatsApp Business arrive sur la roadmap. Pour être prévenu en priorité, écris à contact@manda-ia.com.",
+    a: "Pour le moment, Valina-Bot fonctionne uniquement sur Messenger Facebook. L'intégration Instagram DMs et WhatsApp Business arrive sur la roadmap. Pour être prévenu en priorité, écris à contact@valina-bot.com.",
   },
   {
     q: "Puis-je personnaliser le ton du bot ?",
@@ -59,7 +59,7 @@ export function FAQ() {
               <p className="mt-6 text-[#1C1E21]/70 leading-relaxed">
                 Tout ce que tu te demandes probablement. Si une question manque,{" "}
                 <a
-                  href="mailto:contact@manda-ia.com"
+                  href="mailto:contact@valina-bot.com"
                   className="underline underline-offset-4 decoration-[#1877F2] decoration-2 text-[#1C1E21] font-medium"
                 >
                   écris-nous

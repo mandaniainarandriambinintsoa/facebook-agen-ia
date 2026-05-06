@@ -74,7 +74,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://agent.manda-ia.com",
+        "https://agent.valina-bot.com",
+        "https://valina-bot.com",
+        "https://www.valina-bot.com",
+        "https://agent.manda-ia.com",  # legacy, remove apres migration complete
         "https://facebook-dashboard-nine.vercel.app",
         "http://localhost:3000",
         "http://localhost:3001",

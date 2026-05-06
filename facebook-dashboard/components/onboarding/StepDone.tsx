@@ -88,7 +88,7 @@ export function StepDone({ pageName }: StepDoneProps) {
 
         <p className="mt-12 text-xs text-[#1C1E21]/40 max-w-md mx-auto">
           Tu reçois le premier email récapitulatif demain matin. Si quelque chose ne va pas,
-          écris à <a href="mailto:contact@manda-ia.com" className="underline">contact@manda-ia.com</a>.
+          écris à <a href="mailto:contact@valina-bot.com" className="underline">contact@valina-bot.com</a>.
         </p>
       </div>
     </div>

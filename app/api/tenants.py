@@ -181,10 +181,56 @@ async def get_my_tenants(
             "page_id": t.page_id,
             "page_name": t.page_name,
             "is_active": t.is_active,
+            "owner_email": t.owner_email,
+            "phone": t.phone,
+            "needs_contact_info": (not t.owner_email) or t.owner_email.endswith("@facebook.com"),
             "created_at": t.created_at.isoformat() if t.created_at else None,
         }
         for t in tenants
     ]
+
+
+@tenants_router.patch("/{tenant_id}/contact")
+async def update_tenant_contact(
+    tenant_id: str,
+    data: dict,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Met a jour l'email + telephone du tenant (utilise par le wizard onboarding
+    quand le scope email Facebook n'a pas renvoye d'adresse exploitable)."""
+    import uuid as _uuid
+    import re
+
+    tenant = await crud.get_tenant_by_id(db, _uuid.UUID(tenant_id))
+    if not tenant or tenant.owner_facebook_id != user.get("sub"):
+        raise HTTPException(status_code=403, detail="Acces refuse")
+
+    new_email = (data.get("email") or "").strip().lower()
+    new_phone = (data.get("phone") or "").strip() or None
+
+    # Validation email basique
+    if not new_email or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", new_email):
+        raise HTTPException(status_code=400, detail="Email invalide")
+    if new_email.endswith("@facebook.com"):
+        raise HTTPException(status_code=400, detail="Adresse Facebook par defaut non acceptee")
+
+    # Validation phone (optionnel, format permissif)
+    if new_phone and not re.match(r"^\+?[\d\s().-]{6,30}$", new_phone):
+        raise HTTPException(status_code=400, detail="Numero de telephone invalide")
+
+    tenant.owner_email = new_email
+    tenant.phone = new_phone
+    await db.commit()
+    await db.refresh(tenant)
+
+    logger.info(f"[tenants] contact updated tenant={tenant.id} email={new_email} phone={'yes' if new_phone else 'no'}")
+
+    return {
+        "tenant_id": str(tenant.id),
+        "owner_email": tenant.owner_email,
+        "phone": tenant.phone,
+    }
 
 
 @tenants_router.get("/{tenant_id}/platforms")

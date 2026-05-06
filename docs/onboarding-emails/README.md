@@ -21,7 +21,7 @@ Chaque email utilise des placeholders :
 
 - `{{prenom}}` : prenom du client
 - `{{nom_page}}` : nom de la page Facebook connectee
-- `{{lien_dashboard}}` : URL dashboard du tenant (https://agent.manda-ia.com/dashboard)
+- `{{lien_dashboard}}` : URL dashboard du tenant (https://agent.valina-bot.com/dashboard)
 - `{{lien_upload_catalog}}` : URL upload catalogue
 - `{{lien_message_setup}}` : URL config message bienvenue
 - `{{nb_messages_hier}}` : stat des messages traites la veille

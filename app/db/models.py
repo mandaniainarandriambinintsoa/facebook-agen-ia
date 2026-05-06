@@ -26,6 +26,7 @@ class Tenant(Base):
     page_access_token = Column(Text, nullable=False)
     owner_email = Column(String(255), nullable=False)
     owner_facebook_id = Column(String(50), nullable=True)
+    phone = Column(String(50), nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
@@ -39,6 +40,20 @@ class Tenant(Base):
     uploads = relationship("Upload", back_populates="tenant", cascade="all, delete-orphan")
     prospects = relationship("Prospect", back_populates="tenant", cascade="all, delete-orphan")
     orders = relationship("Order", back_populates="tenant", cascade="all, delete-orphan")
+    onboarding_emails = relationship("SentOnboardingEmail", back_populates="tenant", cascade="all, delete-orphan")
+
+
+class SentOnboardingEmail(Base):
+    """Trace les emails onboarding (J0-J30) deja envoyes pour un tenant.
+    Cle composite (tenant_id, email_key) -> garantit idempotence du cron quotidien."""
+    __tablename__ = "sent_onboarding_emails"
+
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id", ondelete="CASCADE"), primary_key=True)
+    email_key = Column(String(20), primary_key=True)  # "j0", "j1", "j3", "j5", "j7", "j14", "j30"
+    sent_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    brevo_message_id = Column(String(255), nullable=True)
+
+    tenant = relationship("Tenant", back_populates="onboarding_emails")
 
 
 class TenantPlatform(Base):

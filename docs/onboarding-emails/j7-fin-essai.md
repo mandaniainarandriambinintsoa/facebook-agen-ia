@@ -56,7 +56,7 @@ Merci d avoir teste Valina-Bot.
 Manda
 
 ---
-contact@manda-ia.com
+contact@valina-bot.com
 ```
 
 ## Notes

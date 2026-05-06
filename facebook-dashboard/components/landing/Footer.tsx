@@ -13,7 +13,7 @@ const COLUMNS = [
   {
     title: "Société",
     links: [
-      { href: "mailto:contact@manda-ia.com", label: "Contact" },
+      { href: "mailto:contact@valina-bot.com", label: "Contact" },
       { href: "/login", label: "Se connecter" },
     ],
   },
@@ -78,10 +78,10 @@ export function LandingFooter() {
             <p>
               LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Madagascar ·{" "}
               <a
-                href="mailto:contact@manda-ia.com"
+                href="mailto:contact@valina-bot.com"
                 className="underline hover:text-[#F7F8FA]"
               >
-                contact@manda-ia.com
+                contact@valina-bot.com
               </a>
             </p>
           </div>

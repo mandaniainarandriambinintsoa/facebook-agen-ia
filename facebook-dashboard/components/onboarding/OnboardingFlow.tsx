@@ -4,16 +4,18 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConfig } from "@/hooks/useConfig";
-import { tenantApi } from "@/lib/api";
+import { api, tenantApi } from "@/lib/api";
 import { ProgressBar } from "./ProgressBar";
 import { Step1Welcome } from "./Step1Welcome";
+import { Step1Contact } from "./Step1Contact";
 import { Step2Business } from "./Step2Business";
 import { Step3WelcomeMessage } from "./Step3WelcomeMessage";
 import { Step4Catalog } from "./Step4Catalog";
 import { Step5Test } from "./Step5Test";
 import { StepDone } from "./StepDone";
 
-const STEP_LABELS = ["Bienvenue", "Métier", "Accueil", "Catalogue", "Test", "Activé"];
+const STEP_LABELS_DEFAULT = ["Bienvenue", "Métier", "Accueil", "Catalogue", "Test", "Activé"];
+const STEP_LABELS_WITH_CONTACT = ["Bienvenue", "Contact", "Métier", "Accueil", "Catalogue", "Test", "Activé"];
 
 interface OnboardingFlowProps {
   previewMode?: boolean;
@@ -28,6 +30,9 @@ export function OnboardingFlow({ previewMode = false }: OnboardingFlowProps) {
   const [pageName, setPageName] = useState(previewMode ? "Manda Shop" : "ta page");
   const [botType, setBotType] = useState<string | null>(null);
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
+  const [needsContact, setNeedsContact] = useState(false);
+  const [ownerEmail, setOwnerEmail] = useState<string>("");
+  const [ownerPhone, setOwnerPhone] = useState<string>("");
 
   useEffect(() => {
     if (previewMode) return;
@@ -51,15 +56,31 @@ export function OnboardingFlow({ previewMode = false }: OnboardingFlowProps) {
 
   useEffect(() => {
     if (previewMode || !authenticated) return;
-    const fetchTenantName = async () => {
+    const fetchTenantInfo = async () => {
       try {
         const stats = await tenantApi<{ page_name?: string }>("/stats");
         if (stats?.page_name) setPageName(stats.page_name);
       } catch {
         // silent
       }
+      try {
+        const myTenants = await api<Array<{
+          tenant_id: string;
+          owner_email?: string;
+          phone?: string | null;
+          needs_contact_info?: boolean;
+        }>>("/api/tenants/me");
+        const current = myTenants?.[0];
+        if (current) {
+          setNeedsContact(Boolean(current.needs_contact_info));
+          setOwnerEmail(current.owner_email || "");
+          setOwnerPhone(current.phone || "");
+        }
+      } catch {
+        // silent
+      }
     };
-    fetchTenantName();
+    fetchTenantInfo();
   }, [authenticated, previewMode]);
 
   const persistConfig = async (updates: Record<string, unknown>) => {
@@ -76,6 +97,28 @@ export function OnboardingFlow({ previewMode = false }: OnboardingFlowProps) {
 
   const goNext = () => setStep((s) => Math.min(s + 1, 6));
   const goBack = () => setStep((s) => Math.max(s - 1, 1));
+
+  const goAfterWelcome = () => {
+    if (needsContact) {
+      setStep(1.5);
+    } else {
+      setStep(2);
+    }
+  };
+
+  const handleContactDone = () => {
+    setNeedsContact(false);
+    setStep(2);
+  };
+
+  const stepLabels = needsContact ? STEP_LABELS_WITH_CONTACT : STEP_LABELS_DEFAULT;
+  const totalSteps = stepLabels.length;
+  const progressDisplay = (() => {
+    if (!needsContact) return step;
+    if (step === 1) return 1;
+    if (step === 1.5) return 2;
+    return step + 1;
+  })();
 
   const handleStep2 = async (type: string) => {
     setBotType(type);
@@ -136,14 +179,21 @@ export function OnboardingFlow({ previewMode = false }: OnboardingFlowProps) {
       {/* Progress bar */}
       <div className="border-b border-[#1C1E21]/10 px-5 sm:px-8 py-5">
         <div className="max-w-5xl mx-auto">
-          <ProgressBar current={step} total={6} labels={STEP_LABELS} />
+          <ProgressBar current={progressDisplay} total={totalSteps} labels={stepLabels} />
         </div>
       </div>
 
       {/* Step content */}
       <main className="flex-1 px-5 sm:px-8 py-12 md:py-20">
         {step === 1 && (
-          <Step1Welcome pageName={pageName} onNext={goNext} onSkip={skipForLater} />
+          <Step1Welcome pageName={pageName} onNext={goAfterWelcome} onSkip={skipForLater} />
+        )}
+        {step === 1.5 && (
+          <Step1Contact
+            initialEmail={ownerEmail}
+            initialPhone={ownerPhone}
+            onNext={handleContactDone}
+          />
         )}
         {step === 2 && (
           <Step2Business

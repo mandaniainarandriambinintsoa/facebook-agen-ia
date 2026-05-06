@@ -41,7 +41,7 @@ Pas de jugement, je veux juste que tu reussisses.
 Manda
 
 ---
-contact@manda-ia.com
+contact@valina-bot.com
 ```
 
 ## Notes

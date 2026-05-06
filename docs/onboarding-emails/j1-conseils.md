@@ -47,7 +47,7 @@ Reponds a ce mail si tu as une question, je lis tout.
 Manda
 
 ---
-contact@manda-ia.com
+contact@valina-bot.com
 ```
 
 ## Variantes selon nb_messages_hier

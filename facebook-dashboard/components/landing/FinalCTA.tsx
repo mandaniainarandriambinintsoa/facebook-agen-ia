@@ -40,7 +40,7 @@ export function FinalCTA() {
                 </span>
               </Link>
               <a
-                href="mailto:contact@manda-ia.com"
+                href="mailto:contact@valina-bot.com"
                 className="text-[#F7F8FA]/85 hover:text-[#F7F8FA] underline underline-offset-4 decoration-[#F4B83A] decoration-2"
               >
                 Parler à Manda d&apos;abord

@@ -44,7 +44,7 @@ export default function DataDeletionPage() {
           <section>
             <h2 className="text-lg font-semibold">Option 3 : Par email</h2>
             <p>
-              Envoyez un email a <strong>contact@manda-ia.com</strong> avec
+              Envoyez un email a <strong>contact@valina-bot.com</strong> avec
               l&apos;objet &quot;Demande de suppression de donnees&quot; et votre identifiant Facebook.
               Nous traiterons votre demande sous 30 jours.
             </p>

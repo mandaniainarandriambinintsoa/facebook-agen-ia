@@ -43,8 +43,8 @@ Manda
 Fondateur Valina-Bot
 
 ---
-contact@manda-ia.com
-https://agent.manda-ia.com
+contact@valina-bot.com
+https://agent.valina-bot.com
 ```
 
 ## Notes

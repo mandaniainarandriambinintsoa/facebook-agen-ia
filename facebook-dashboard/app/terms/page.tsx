@@ -111,7 +111,7 @@ export default function TermsPage() {
               Pour toute question concernant ces conditions :<br />
               <strong>RANDRIAMBININTSOA MANDANIAINA</strong><br />
               LOT VT 85 HE BIS DB ANDOHANIMANDROSEZA, Antananarivo, Analamanga, 101, Madagascar<br />
-              Email : contact@manda-ia.com
+              Email : contact@valina-bot.com
             </p>
           </section>
         </CardContent>
