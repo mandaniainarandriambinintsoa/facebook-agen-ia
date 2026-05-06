@@ -50,7 +50,7 @@ Porkbun -> DNS -> onglet **Email Forwarding** :
 | Alias | Forward to |
 |-------|------------|
 | `contact@valina-bot.com` | `studio.dev1@arpon.agency` |
-| `hello@valina-bot.com` | `studio.dev1@arpon.agency` |
+| `contact@valina-bot.com` | `studio.dev1@arpon.agency` |
 
 ### 1e. Verifier la propagation
 
@@ -100,7 +100,7 @@ Sur l'app backend prod :
 |----------|-------|-------|
 | `FACEBOOK_OAUTH_REDIRECT_URI` | `https://api.manda-ia.com/auth/facebook/callback` | `https://api.valina-bot.com/auth/facebook/callback` |
 | `DASHBOARD_BASE_URL` | (default) | `https://agent.valina-bot.com` |
-| `MAIL_FROM` | — | `hello@valina-bot.com` |
+| `MAIL_FROM` | — | `contact@valina-bot.com` |
 | `MAIL_FROM_NAME` | — | `Valina-Bot` |
 | `BREVO_API_KEY` | — | `xkeysib-...` (si Brevo deja setup) |
 
@@ -189,7 +189,7 @@ Puis force deploy prod via le script Coolify.
 - [ ] `https://api.valina-bot.com/openapi.json` -> JSON OK
 - [ ] `https://api.valina-bot.com/webhook/messenger?hub.mode=subscribe&hub.verify_token=<TOKEN>&hub.challenge=test` -> renvoie `test`
 - [ ] Test envoi message Messenger -> bot repond
-- [ ] Test inscription nouveau compte -> email J0 recu sur `hello@valina-bot.com`
+- [ ] Test inscription nouveau compte -> email J0 recu sur `contact@valina-bot.com`
 - [ ] `mailto:contact@valina-bot.com` -> mail forward fonctionne (Porkbun)
 
 ### Mailtester deliverability
@@ -230,7 +230,7 @@ Apres 1 semaine de stabilite sur `valina-bot.com` :
   - **Laisser expirer** si propre et pas de SEO accumule
 
 ### Renouveau domaine
-- Brancher l'envoi des emails depuis `hello@valina-bot.com` au lieu de
+- Brancher l'envoi des emails depuis `contact@valina-bot.com` au lieu de
   l'ancienne adresse (deja prevu dans `MAIL_FROM` env var)
 
 ---

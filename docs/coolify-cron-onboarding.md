@@ -46,7 +46,7 @@ Trouver le `<container_name>` avec `docker ps | grep valina-bot-api`.
 
 ```
 BREVO_API_KEY=xkeysib-xxxxxxxxxxxxx
-MAIL_FROM=hello@valina-bot.com
+MAIL_FROM=contact@valina-bot.com
 MAIL_FROM_NAME=Valina-Bot
 DASHBOARD_BASE_URL=https://agent.valina-bot.com
 ```

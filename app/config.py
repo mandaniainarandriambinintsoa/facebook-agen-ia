@@ -69,7 +69,7 @@ class Settings(BaseSettings):
 
     # Brevo (emails transactionnels et onboarding)
     brevo_api_key: str = Field(default="", description="Brevo API key (xkeysib-...)")
-    mail_from: str = Field(default="hello@valina-bot.com", description="Sender email")
+    mail_from: str = Field(default="contact@valina-bot.com", description="Sender email")
     mail_from_name: str = Field(default="Valina-Bot", description="Sender name displayed in inbox")
     dashboard_base_url: str = Field(default="https://agent.valina-bot.com", description="Dashboard URL for email links")
 

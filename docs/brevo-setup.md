@@ -52,18 +52,18 @@ mettront tes emails en spam.
 4. Astuce : tester avec `dig TXT valina-bot.com @8.8.8.8` ou
    https://mxtoolbox.com/spf.aspx pour voir si SPF est propage
 
-## 3. Creer le sender `hello@valina-bot.com` (1 min)
+## 3. Creer le sender `contact@valina-bot.com` (1 min)
 
 1. Menu → **Senders** → onglet **Senders**
 2. **Add a sender** :
    - Sender name : `Valina-Bot`
-   - Sender email : `hello@valina-bot.com`
-3. Brevo envoie un email de confirmation a `hello@valina-bot.com`
+   - Sender email : `contact@valina-bot.com`
+3. Brevo envoie un email de confirmation a `contact@valina-bot.com`
 4. **Probleme** : tu n'as pas encore de boite mail sur ce domaine
 
    **Solution rapide** : creer un alias gratuit chez Porkbun
    - Porkbun → DNS → onglet **Email Forwarding**
-   - Forward `hello@valina-bot.com` → `studio.dev1@arpon.agency`
+   - Forward `contact@valina-bot.com` → `studio.dev1@arpon.agency`
    - Sauvegarder
    - Attendre 5 min, le mail de confirmation Brevo va arriver dans ta boite Arpon
    - Cliquer le lien → sender verifie
@@ -82,7 +82,7 @@ Dans Coolify, app `backend` (api.valina-bot.com), env vars :
 
 ```
 BREVO_API_KEY=xkeysib-xxxxxxxxx
-MAIL_FROM=hello@valina-bot.com
+MAIL_FROM=contact@valina-bot.com
 MAIL_FROM_NAME=Valina-Bot
 ```
 
@@ -107,7 +107,7 @@ Si tu recois l'email "Test Brevo Valina-Bot" → tout marche.
 
 - [ ] Compte Brevo cree
 - [ ] Domaine `valina-bot.com` verifie (3 records DNS Porkbun)
-- [ ] Sender `hello@valina-bot.com` cree et confirme
+- [ ] Sender `contact@valina-bot.com` cree et confirme
 - [ ] Email forwarding Porkbun configure (`hello@` → ton inbox)
 - [ ] Cle API Brevo generee
 - [ ] `BREVO_API_KEY`, `MAIL_FROM`, `MAIL_FROM_NAME` ajoutes dans Coolify (prod + stagging)

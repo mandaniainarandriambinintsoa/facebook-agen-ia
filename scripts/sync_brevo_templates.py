@@ -14,7 +14,7 @@ Idempotent : peut etre relance autant de fois que necessaire apres edit des HTML
 
 Prerequis :
 - BREVO_API_KEY defini dans .env
-- Sender hello@valina-bot.com confirme dans Brevo
+- Sender contact@valina-bot.com confirme dans Brevo
 """
 from __future__ import annotations
 
