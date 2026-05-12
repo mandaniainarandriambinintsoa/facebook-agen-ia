@@ -47,15 +47,33 @@ async def facebook_login(state: str = ""):
 
 @router.get("/facebook/callback")
 async def facebook_callback(
-    code: str = Query(...),
+    code: str | None = Query(None),
     state: str = Query(""),
+    error: str | None = Query(None),
+    error_code: str | None = Query(None),
+    error_message: str | None = Query(None),
+    error_reason: str | None = Query(None),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Callback OAuth Facebook.
     Echange le code, recupere les pages, cree les tenants, retourne un JWT.
-    En cas d'erreur, redirige vers le frontend avec ?error= si state est un URL.
+    En cas d'erreur (Meta ou interne), redirige vers le frontend avec ?error=
+    si state est un URL, sinon retourne un message lisible.
     """
+    # Meta a renvoye une erreur (user cancel, scope invalide, app en mise a jour...)
+    if error or error_code or error_message:
+        meta_err = error_message or error_reason or error or f"Facebook a refuse l'autorisation (code {error_code})"
+        logger.warning(f"[OAuth] callback erreur Meta: error={error} code={error_code} msg={error_message}")
+        return _callback_redirect_or_json(state, error=meta_err)
+
+    # Defense : si Meta nous redirige sans code ni erreur (cas tres rare)
+    if not code:
+        return _callback_redirect_or_json(
+            state,
+            error="Reponse Facebook incomplete (ni code, ni erreur). Recommence l'autorisation.",
+        )
+
     try:
         # Echanger le code contre des tokens
         token_data = await oauth.exchange_code_for_token(code)
